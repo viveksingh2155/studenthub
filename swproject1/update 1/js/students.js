@@ -6,12 +6,12 @@
 // ---- LocalStorage Persistence (Step 10) ----
 
 function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /** Reads the student list from localStorage into state. */
@@ -42,23 +42,26 @@ function saveState() {
 }
 
 /** Briefly highlights the sync status bar when data is saved. */
-function triggerSyncSuccess(msg = "✓ Browser LocalStorage Cache Layer Synchronized") {
-  const syncStatus = document.getElementById('sync-status-text');
-  const syncPulse  = document.getElementById('sync-pulse');
+function triggerSyncSuccess(
+  msg = "✓ Browser LocalStorage Cache Layer Synchronized",
+) {
+  const syncStatus = document.getElementById("sync-status-text");
+  const syncPulse = document.getElementById("sync-pulse");
 
   syncStatus.textContent = msg;
-  syncStatus.classList.remove('text-slate-400');
-  syncStatus.classList.add('text-emerald-400', 'font-bold');
-  syncPulse.classList.remove('bg-emerald-500');
-  syncPulse.classList.add('bg-emerald-400', 'shadow-glow-emerald');
+  syncStatus.classList.remove("text-slate-400");
+  syncStatus.classList.add("text-emerald-400", "font-bold");
+  syncPulse.classList.remove("bg-emerald-500");
+  syncPulse.classList.add("bg-emerald-400", "shadow-glow-emerald");
 
   setTimeout(() => {
-    syncStatus.classList.remove('text-emerald-400', 'font-bold');
-    syncStatus.classList.add('text-slate-400');
-    syncPulse.classList.add('bg-emerald-500');
-    syncPulse.classList.remove('bg-emerald-400', 'shadow-glow-emerald');
+    syncStatus.classList.remove("text-emerald-400", "font-bold");
+    syncStatus.classList.add("text-slate-400");
+    syncPulse.classList.add("bg-emerald-500");
+    syncPulse.classList.remove("bg-emerald-400", "shadow-glow-emerald");
     if (msg !== "✓ Browser LocalStorage Cache Layer Synchronized") {
-      syncStatus.textContent = "✓ Browser LocalStorage Cache Layer Synchronized";
+      syncStatus.textContent =
+        "✓ Browser LocalStorage Cache Layer Synchronized";
     }
   }, 2500);
 
@@ -71,7 +74,9 @@ function triggerSyncSuccess(msg = "✓ Browser LocalStorage Cache Layer Synchron
 function seedMockData() {
   state.students = [...DEFAULT_SEED_DATA];
   saveState();
-  const currentView = document.querySelector('[id^="view-"]:not(.hidden)').id.replace('view-', '');
+  const currentView = document
+    .querySelector('[id^="view-"]:not(.hidden)')
+    .id.replace("view-", "");
   switchView(currentView);
   logAction("Database cache loaded with mock seed profile array.");
 }
@@ -80,41 +85,50 @@ function seedMockData() {
 function clearDatabase() {
   state.students = [];
   saveState();
-  const currentView = document.querySelector('[id^="view-"]:not(.hidden)').id.replace('view-', '');
+  const currentView = document
+    .querySelector('[id^="view-"]:not(.hidden)')
+    .id.replace("view-", "");
   switchView(currentView);
   logAction("LocalStorage cache database flushed.");
 }
 
 function createBlankStudentSheet() {
   if (!window.XLSX) {
-    alert('Excel export is unavailable right now.');
+    alert("Excel export is unavailable right now.");
     return;
   }
 
   const headers = [
-    'Student ID',
-    'Full Name',
-    'Roll Number',
-    'Email Address',
-    'Course Title',
-    'Age',
-    'Status'
+    "Student ID",
+    "Full Name",
+    "Roll Number",
+    "Email Address",
+    "Course Title",
+    "Age",
+    "Status",
   ];
-  const rows = [headers, ['', '', '', '', '', '', ''], ['', '', '', '', '', '', ''], ['', '', '', '', '', '', '']];
+  const rows = [
+    headers,
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+  ];
   const workbook = XLSX.utils.book_new();
   const sheet = XLSX.utils.aoa_to_sheet(rows);
-  XLSX.utils.book_append_sheet(workbook, sheet, 'Students');
-  const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  XLSX.utils.book_append_sheet(workbook, sheet, "Students");
+  const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([wbout], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
   const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
+  const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = `student_template_blank_${new Date().toISOString().slice(0, 10)}.xlsx`;
   document.body.appendChild(anchor);
   anchor.click();
   document.body.removeChild(anchor);
   URL.revokeObjectURL(url);
-  logAction('Downloaded a blank student Excel sheet template.');
+  logAction("Downloaded a blank student Excel sheet template.");
 }
 
 window.createBlankStudentSheet = createBlankStudentSheet;
@@ -123,96 +137,116 @@ window.createBlankStudentSheet = createBlankStudentSheet;
 
 /** Toggles the Add Student registration form panel visibility. */
 function toggleAddStudentForm() {
-  if (document.getElementById('view-roster').classList.contains('hidden')) {
-    switchView('roster');
+  if (document.getElementById("view-roster").classList.contains("hidden")) {
+    switchView("roster");
   }
-  const formCard = document.getElementById('step-3-schema');
-  if (formCard.classList.contains('hidden')) {
-    formCard.classList.remove('hidden');
-    document.getElementById('form-name').focus();
+  const formCard = document.getElementById("step-3-schema");
+  if (formCard.classList.contains("hidden")) {
+    formCard.classList.remove("hidden");
+    document.getElementById("form-name").focus();
     highlightStepBadge(3);
   } else {
-    formCard.classList.add('hidden');
+    formCard.classList.add("hidden");
   }
 }
 
 /** Handles the Add Student form submission — validates and persists to state. */
 function handleFormSubmit(e) {
   e.preventDefault();
-  const name   = document.getElementById('form-name').value.trim();
-  const roll   = document.getElementById('form-roll').value.trim();
-  const email  = document.getElementById('form-email').value.trim();
-  const course = document.getElementById('form-course').value;
-  const age    = parseInt(document.getElementById('form-age').value);
-  const status = document.getElementById('form-status').value;
+  const name = document.getElementById("form-name").value.trim();
+  const roll = document.getElementById("form-roll").value.trim();
+  const email = document.getElementById("form-email").value.trim();
+  const course = document.getElementById("form-course").value;
+  const age = parseInt(document.getElementById("form-age").value);
+  const status = document.getElementById("form-status").value;
 
-  const isDuplicate = state.students.some(s => s.rollNumber.toLowerCase() === roll.toLowerCase());
+  const isDuplicate = state.students.some(
+    (s) => s.rollNumber.toLowerCase() === roll.toLowerCase(),
+  );
   if (isDuplicate) {
     alert(`Database Integrity Error: Roll number ${roll} already registered.`);
     return;
   }
 
-  const randomID = 'STU-' + Math.floor(1000 + Math.random() * 9000) + '-' + Math.floor(10 + Math.random() * 89);
-  const newStudent = { id: randomID, name, rollNumber: roll, email, course, age, status };
+  const randomID =
+    "STU-" +
+    Math.floor(1000 + Math.random() * 9000) +
+    "-" +
+    Math.floor(10 + Math.random() * 89);
+  const newStudent = {
+    id: randomID,
+    name,
+    rollNumber: roll,
+    email,
+    course,
+    age,
+    status,
+  };
 
   state.students.unshift(newStudent);
   saveState();
   render();
 
-  document.getElementById('add-student-form').reset();
+  document.getElementById("add-student-form").reset();
   toggleAddStudentForm();
   logAction(`Registered new student profile: ${name} (${roll})`);
-  document.getElementById('step-6-grid').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById("step-6-grid").scrollIntoView({ behavior: "smooth" });
 }
 
 // ---- Edit Modal (Step 7) ----
 
 /** Opens and pre-fills the edit modal for a given student ID. */
 function openEditModal(studentId) {
-  const student = state.students.find(s => s.id === studentId);
+  const student = state.students.find((s) => s.id === studentId);
   if (!student) return;
 
-  document.getElementById('edit-id').value     = student.id;
-  document.getElementById('edit-name').value   = student.name;
-  document.getElementById('edit-roll').value   = student.rollNumber;
-  document.getElementById('edit-email').value  = student.email;
-  document.getElementById('edit-course').value = student.course;
-  document.getElementById('edit-age').value    = student.age;
-  document.getElementById('edit-status').value =
-    (student.status === 'Active' || student.status === 'Active Status') ? 'Active' : 'Inactive';
+  document.getElementById("edit-id").value = student.id;
+  document.getElementById("edit-name").value = student.name;
+  document.getElementById("edit-roll").value = student.rollNumber;
+  document.getElementById("edit-email").value = student.email;
+  document.getElementById("edit-course").value = student.course;
+  document.getElementById("edit-age").value = student.age;
+  document.getElementById("edit-status").value =
+    student.status === "Active" || student.status === "Active Status"
+      ? "Active"
+      : "Inactive";
 
-  const modal = document.getElementById('step-7-modal');
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
+  const modal = document.getElementById("step-7-modal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
   highlightStepBadge(7);
 }
 
 /** Closes the edit modal. */
 function closeEditModal() {
-  const modal = document.getElementById('step-7-modal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
+  const modal = document.getElementById("step-7-modal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
 }
 
 /** Saves changes from the edit modal form. */
 function handleEditFormSubmit(e) {
   e.preventDefault();
-  const id     = document.getElementById('edit-id').value;
-  const name   = document.getElementById('edit-name').value.trim();
-  const roll   = document.getElementById('edit-roll').value.trim();
-  const email  = document.getElementById('edit-email').value.trim();
-  const course = document.getElementById('edit-course').value;
-  const age    = parseInt(document.getElementById('edit-age').value);
-  const status = document.getElementById('edit-status').value;
+  const id = document.getElementById("edit-id").value;
+  const name = document.getElementById("edit-name").value.trim();
+  const roll = document.getElementById("edit-roll").value.trim();
+  const email = document.getElementById("edit-email").value.trim();
+  const course = document.getElementById("edit-course").value;
+  const age = parseInt(document.getElementById("edit-age").value);
+  const status = document.getElementById("edit-status").value;
 
-  const isDuplicate = state.students.some(s => s.id !== id && s.rollNumber.toLowerCase() === roll.toLowerCase());
+  const isDuplicate = state.students.some(
+    (s) => s.id !== id && s.rollNumber.toLowerCase() === roll.toLowerCase(),
+  );
   if (isDuplicate) {
     alert(`Integrity Error: Roll number ${roll} belongs to another record.`);
     return;
   }
 
-  state.students = state.students.map(s =>
-    s.id === id ? { ...s, name, rollNumber: roll, email, course, age, status } : s
+  state.students = state.students.map((s) =>
+    s.id === id
+      ? { ...s, name, rollNumber: roll, email, course, age, status }
+      : s,
   );
 
   saveState();
@@ -228,17 +262,17 @@ let studentIdToDelete = null;
 /** Opens the delete confirmation modal for the given student ID. */
 function deleteStudent(studentId) {
   studentIdToDelete = studentId;
-  const modal = document.getElementById('delete-confirm-modal');
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
+  const modal = document.getElementById("delete-confirm-modal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
 }
 
 /** Closes the delete confirmation modal without deleting. */
 function closeDeleteModal() {
   studentIdToDelete = null;
-  const modal = document.getElementById('delete-confirm-modal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
+  const modal = document.getElementById("delete-confirm-modal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
 }
 
 /** Permanently removes the student from state and re-renders. */
@@ -247,14 +281,14 @@ function executeDeleteStudent() {
     const id = studentIdToDelete;
     const cardElement = document.getElementById(`student-card-${id}`);
     if (cardElement) {
-      cardElement.classList.add('opacity-0', 'scale-90', 'translate-y-4');
+      cardElement.classList.add("opacity-0", "scale-90", "translate-y-4");
       setTimeout(() => {
-        state.students = state.students.filter(s => s.id !== id);
+        state.students = state.students.filter((s) => s.id !== id);
         saveState();
         render();
       }, 300);
     } else {
-      state.students = state.students.filter(s => s.id !== id);
+      state.students = state.students.filter((s) => s.id !== id);
       saveState();
       render();
     }
@@ -278,33 +312,35 @@ function handleSearch(val) {
  * @param {boolean} isSearching
  */
 function render(isSearching = false) {
-  const container  = document.getElementById('student-roster-viewport');
-  const emptyState = document.getElementById('step-4-empty');
+  const container = document.getElementById("student-roster-viewport");
+  const emptyState = document.getElementById("step-4-empty");
 
-  container.innerHTML = '';
+  container.innerHTML = "";
 
-  const filtered = state.students.filter(s =>
-    s.name.toLowerCase().includes(state.searchQuery) ||
-    s.rollNumber.toLowerCase().includes(state.searchQuery) ||
-    s.course.toLowerCase().includes(state.searchQuery)
+  const filtered = state.students.filter(
+    (s) =>
+      s.name.toLowerCase().includes(state.searchQuery) ||
+      s.rollNumber.toLowerCase().includes(state.searchQuery) ||
+      s.course.toLowerCase().includes(state.searchQuery),
   );
 
-  document.getElementById('filtered-count').textContent =
+  document.getElementById("filtered-count").textContent =
     `${filtered.length} of ${state.students.length} Items`;
 
   if (state.students.length === 0) {
-    emptyState.classList.remove('hidden');
-    emptyState.classList.add('flex');
-    container.classList.add('hidden');
+    emptyState.classList.remove("hidden");
+    emptyState.classList.add("flex");
+    container.classList.add("hidden");
     return;
   }
 
-  emptyState.classList.add('hidden');
-  emptyState.classList.remove('flex');
-  container.classList.remove('hidden');
+  emptyState.classList.add("hidden");
+  emptyState.classList.remove("flex");
+  container.classList.remove("hidden");
 
-  filtered.forEach(student => {
-    const isActive = student.status === 'Active' || student.status === 'Active Status';
+  filtered.forEach((student) => {
+    const isActive =
+      student.status === "Active" || student.status === "Active Status";
     container.innerHTML += `
       <div id="student-card-${student.id}" class="step-highlight bg-slate-900 border border-slate-800 hover:border-slate-700/60 p-5 rounded-2xl flex flex-col justify-between shadow-md relative group hover:-translate-y-1 transition-all duration-300 transform scale-100">
         
@@ -322,10 +358,10 @@ function render(isSearching = false) {
             </div>
             <span class="px-2.5 py-0.5 text-[9px] font-bold rounded-full border tracking-wide uppercase ${
               isActive
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-              : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                : "bg-rose-500/10 border-rose-500/20 text-rose-400"
             }">
-              ${isActive ? 'Active' : 'Inactive'}
+              ${isActive ? "Active" : "Inactive"}
             </span>
           </div>
 

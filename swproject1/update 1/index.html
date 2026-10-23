@@ -1,459 +1,1746 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Student Hub — Modern Admin Dashboard for managing student registrations, courses, and analytics.">
-  <title>Student Hub - Modern Admin Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Student Hub — Modern Admin Dashboard for managing student registrations, courses, and analytics."
+    />
+    <title>Student Hub - Modern Admin Dashboard</title>
 
-  <!-- 1. Tailwind Config — MUST load BEFORE the CDN script -->
-  <script src="js/config.js?v=2"></script>
+    <!-- 1. Tailwind Config — MUST load BEFORE the CDN script -->
+    <script src="js/config.js?v=3"></script>
 
-  <!-- 2. Tailwind CSS Play CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 2. Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- 3. Google Fonts: Inter & Fira Code -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- 3. Google Fonts: Inter & Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- 4. Custom Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-<body class="font-sans antialiased h-screen select-none relative">
-
-  <!-- ========================================== -->
-  <!-- LOGIN / REGISTER / RESET AUTH VIEWPORT      -->
-  <!-- ========================================== -->
-  <div id="auth-container" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-emerald-50 overflow-y-auto p-4">
-    <!-- Animated background glow -->
-    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-green-400/15 rounded-full blur-3xl pulse-dot pointer-events-none"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl pulse-dot pointer-events-none" style="animation-delay: 0.75s"></div>
-
-    <div class="relative w-full max-w-md bg-white/90 backdrop-blur-xl border border-green-200 rounded-2xl shadow-2xl shadow-green-100 p-8">
-      <!-- Brand -->
-      <div class="flex flex-col items-center mb-8">
-        <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 mb-3">
-          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-          </svg>
-        </div>
-        <h2 class="text-2xl font-bold text-green-900 tracking-tight">Student Hub</h2>
-        <p class="text-xs text-green-600 mt-1 font-mono">Secure Administration Access</p>
-      </div>
-
-      <!-- Alert Banners -->
-      <div id="auth-alert" class="hidden mb-6 p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg flex items-center gap-2">
-        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <span id="auth-alert-msg"></span>
-      </div>
-      <div id="auth-success" class="hidden mb-6 p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-lg flex items-center gap-2">
-        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <span id="auth-success-msg"></span>
-      </div>
-
-      <!-- VIEW: Login -->
-      <div id="auth-view-login" class="space-y-5">
-        <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Email Address or Phone Number</label>
-            <input required type="text" id="login-identifier" placeholder="admin@studenthub.io or +1234567890"
-              class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
-          </div>
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider">Password</label>
-              <button type="button" onclick="showAuthView('reset')" class="text-xs text-green-600 hover:text-green-700 font-mono transition">Forgot Password?</button>
-            </div>
-            <input required type="password" id="login-password" placeholder="••••••••"
-              class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
-          </div>
-          <button id="login-submit-btn" type="submit"
-            class="btn-transition w-full bg-custom-primary bg-custom-primary-hover text-white py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-lg hover:shadow-glow-custom mt-2">
-            Secure Log In
-          </button>
-        </form>
-        <div class="text-center pt-4 border-t border-green-100 flex flex-col gap-3">
-          <p class="text-xs text-gray-500">
-            Don't have an admin account?
-            <button id="go-to-register-btn" onclick="showAuthView('register')" class="text-green-600 hover:text-green-700 font-semibold underline transition">Create One</button>
-          </p>
-          <div class="bg-green-50 border border-green-100 p-2.5 rounded-lg flex items-center justify-between text-[10px] text-gray-500 font-mono">
-            <span>Quick Login: <b class="text-gray-700">admin@studenthub.io / admin123</b></span>
-            <button id="autofill-btn" onclick="autofillCredentials()" class="bg-green-500/10 hover:bg-green-500/25 border border-green-500/20 text-green-600 px-2 py-0.5 rounded transition">Autofill</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- VIEW: Register -->
-      <div id="auth-view-register" class="hidden space-y-5">
-        <form onsubmit="handleRegisterSubmit(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Full Name</label>
-            <input required type="text" id="register-name" placeholder="John Doe"
-              class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Email Address</label>
-            <input required type="email" id="register-email" placeholder="john@studenthub.io"
-              class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Phone Number</label>
-            <input required type="tel" id="register-phone" placeholder="+1234567890"
-              class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Password</label>
-              <input required type="password" id="register-password" placeholder="••••••••"
-                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Confirm</label>
-              <input required type="password" id="register-confirm" placeholder="••••••••"
-                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
-            </div>
-          </div>
-          <button id="register-submit-btn" type="submit"
-            class="btn-transition w-full bg-custom-primary bg-custom-primary-hover text-white py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-lg hover:shadow-glow-custom mt-2">
-            Create Account
-          </button>
-        </form>
-        <div class="text-center pt-4 border-t border-green-100">
-          <p class="text-xs text-gray-500">
-            Already have an account?
-            <button id="go-to-login-btn" onclick="showAuthView('login')" class="text-green-600 hover:text-green-700 font-semibold underline transition">Back to Login</button>
-          </p>
-        </div>
-      </div>
-
-      <!-- VIEW: Password Reset -->
-      <div id="auth-view-reset" class="hidden space-y-5">
-        <form onsubmit="handleResetSubmit(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Account Email or Phone Number</label>
-            <div class="flex gap-2">
-              <input required type="text" id="reset-identifier" placeholder="admin@studenthub.io or +1234567890"
-                class="flex-1 bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
-              <button id="get-otp-btn" type="button" onclick="sendMockOTP()"
-                class="btn-transition bg-green-100 hover:bg-green-200 text-green-800 px-3 py-2 text-xs font-semibold border border-green-200 rounded-lg">Get OTP</button>
-            </div>
-          </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div class="col-span-1">
-              <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">OTP Code</label>
-              <input required type="text" id="reset-otp" placeholder="123456"
-                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm font-mono text-center px-2 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition">
-            </div>
-            <div class="col-span-2">
-              <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">New Password</label>
-              <input required type="password" id="reset-password" placeholder="••••••••"
-                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
-            </div>
-          </div>
-          <button id="reset-submit-btn" type="submit"
-            class="btn-transition w-full bg-custom-primary bg-custom-primary-hover text-white py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-lg hover:shadow-glow-custom mt-2">
-            Update and Log In
-          </button>
-        </form>
-        <div class="text-center pt-4 border-t border-green-100">
-          <p class="text-xs text-gray-500">
-            Remembered your credentials?
-            <button id="reset-back-to-login-btn" onclick="showAuthView('login')" class="text-green-600 hover:text-green-700 font-semibold underline transition">Back to Login</button>
-          </p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- PROTECTED MAIN APP LAYOUT                  -->
-  <!-- ========================================== -->
-  <div id="app-layout" class="hidden h-full w-full flex">
-
-    <!-- ==========================================
-         STEP 1: LEFT SIDEBAR NAVIGATION PANEL
-         ========================================== -->
-    <aside id="step-1-sidebar" class="step-highlight w-64 bg-white border-r border-green-100 flex flex-col justify-between flex-shrink-0 z-30 transition-all duration-300 relative shadow-sm">
-      <div>
-        <!-- Brand Header -->
-        <div class="p-6 border-b border-green-100 flex items-center gap-3">
-          <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/25">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+    <!-- 4. Custom Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="font-sans antialiased h-screen select-none relative">
+    <!-- ========================================== -->
+    <!-- LOGIN / REGISTER / RESET AUTH VIEWPORT      -->
+    <!-- ========================================== -->
+    <div
+      id="auth-container"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-emerald-50 overflow-y-auto p-4"
+    >
+      <!-- Animated background glow -->
+      <div
+        class="relative w-full max-w-md bg-white/90 backdrop-blur-xl border border-green-200 rounded-2xl shadow-2xl shadow-green-100 p-8"
+      >
+        <!-- Brand -->
+        <div class="flex flex-col items-center mb-8">
+          <div
+            class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 mb-3"
+          >
+            <svg
+              class="w-7 h-7 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+              ></path>
             </svg>
           </div>
-          <div>
-            <h1 class="text-lg font-bold text-green-900 tracking-tight">Student Hub</h1>
-            <span class="text-xs font-mono text-green-500 tracking-wider uppercase">Portal Admin</span>
-          </div>
-        </div>
-
-        <!-- Navigation Links -->
-        <nav class="p-4 space-y-1">
-          <button id="nav-dashboard" onclick="switchView('dashboard')" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-green-800 bg-green-100 border border-green-200 shadow-sm transition">
-            <svg class="w-5 h-5 text-custom-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"></path></svg>
-            System Dashboard
-          </button>
-          <button id="nav-roster" onclick="switchView('roster')" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-500 hover:text-green-800 hover:bg-green-50 border border-transparent hover:border-green-100 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            Student Roster
-          </button>
-          <button id="nav-batches" onclick="switchView('batches')" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-500 hover:text-green-800 hover:bg-green-50 border border-transparent hover:border-green-100 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-            Course Batches
-          </button>
-          <button id="nav-sql-studio" onclick="switchView('sql-studio')" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-500 hover:text-green-800 hover:bg-green-50 border border-transparent hover:border-green-100 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8M8 13h5m-7 4h10a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            SQL Dataset Studio
-          </button>
-          <button id="nav-settings" onclick="switchView('settings')" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-500 hover:text-green-800 hover:bg-green-50 border border-transparent hover:border-green-100 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            Settings
-          </button>
-        </nav>
-      </div>
-
-      <!-- User Profile & Sign Out -->
-      <div class="p-4 border-t border-green-100 bg-green-50/50">
-        <div class="flex items-center gap-3">
-          <div class="relative">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" class="w-10 h-10 rounded-lg object-cover ring-2 ring-green-400/30" alt="Admin">
-            <span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white pulse-dot"></span>
-          </div>
-          <div class="min-w-0 flex-1">
-            <h4 id="user-display-name" class="text-xs font-semibold text-green-900 truncate">Devon Lane</h4>
-            <p id="user-display-email" class="text-[10px] text-green-600 truncate font-mono">devon@studenthub.io</p>
-          </div>
-          <button id="sign-out-btn" onclick="handleSignOut()" title="Sign Out"
-            class="p-1.5 text-gray-400 hover:text-rose-500 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded-lg transition duration-200 flex-shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-          </button>
-        </div>
-        <div class="mt-4 pt-3 border-t border-green-100 flex items-center justify-between text-[10px] text-green-600 font-mono">
-          <span>V1.0.4-LTS</span>
-          <span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Active Session</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- ==========================================
-         MAIN CONTENT AREA
-         ========================================== -->
-    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto bg-green-50 relative pb-16">
-
-      <!-- Top Header Bar -->
-      <header class="h-16 border-b border-green-100 px-8 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-20 shadow-sm">
-        <div class="flex items-center gap-4">
-          <h2 class="text-xl font-bold text-green-900 tracking-tight flex items-center gap-2">
-            Administration Portal
-            <span class="text-xs font-normal text-green-600 border border-green-200 bg-green-50 px-2 py-0.5 rounded-md">Vite-Next.js Dev Server</span>
+          <h2 class="text-2xl font-bold text-green-900 tracking-tight">
+            Student Hub
           </h2>
+          <p class="text-xs text-green-600 mt-1 font-mono">
+            Secure Administration Access
+          </p>
         </div>
 
-        <!-- ADD STUDENT TRIGGER -->
-        <div class="flex items-center gap-3">
-          <button onclick="exportToExcel()" class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3.5 py-2 text-xs font-bold rounded-lg border border-green-200 flex items-center gap-2 shadow-sm">
-            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            Export Excel (CSV)
-          </button>
-          <button onclick="toggleAddStudentForm()" class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-4 py-2 text-xs font-bold rounded-lg shadow-lg hover:shadow-glow-custom border border-custom-primary-40 flex items-center gap-2">
-            <svg class="w-4 h-4 stroke-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
-            + Add New Student
-          </button>
+        <!-- Alert Banners -->
+        <div
+          id="auth-alert"
+          class="hidden mb-6 p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg flex items-center gap-2"
+        >
+          <svg
+            class="w-4 h-4 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <span id="auth-alert-msg"></span>
         </div>
-      </header>
-
-      <!-- Scrollable Viewport -->
-      <div class="p-8 space-y-8 flex-1">
-
-        <!-- ========================================== -->
-        <!-- VIEW: SYSTEM DASHBOARD                     -->
-        <!-- ========================================== -->
-        <div id="view-dashboard" class="space-y-8">
-
-          <!-- STEP 11: ANALYTICS WIDGETS -->
-          <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-            <!-- Card 1: Total -->
-            <div class="bg-white border border-green-100 hover:border-green-200 p-5 rounded-xl flex flex-col justify-between shadow-sm relative group overflow-hidden transition duration-300">
-              <div class="absolute top-0 right-0 w-24 h-24 bg-blue-400/5 rounded-full blur-2xl group-hover:bg-blue-400/10 transition duration-300"></div>
-              <div class="flex items-start justify-between">
-                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Registered</span>
-                <div class="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100">
-                  <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                </div>
-              </div>
-              <div class="mt-4">
-                <h3 id="stat-total-students" class="text-3xl font-extrabold text-gray-800 tracking-tight font-sans">0</h3>
-                <p class="text-[10px] text-gray-400 font-mono mt-1">Active + Inactive accounts</p>
-              </div>
-            </div>
-
-            <!-- Card 2: Active -->
-            <div class="bg-white border border-green-100 hover:border-green-200 p-5 rounded-xl flex flex-col justify-between shadow-sm relative group overflow-hidden transition duration-300">
-              <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-400/5 rounded-full blur-2xl group-hover:bg-emerald-400/10 transition duration-300"></div>
-              <div class="flex items-start justify-between">
-                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active Status</span>
-                <div class="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center border border-emerald-100">
-                  <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-              </div>
-              <div class="mt-4">
-                <h3 id="stat-active-students" class="text-3xl font-extrabold text-emerald-600 tracking-tight font-sans">0</h3>
-                <p class="text-[10px] text-gray-400 font-mono mt-1">✓ Operating Normally</p>
-              </div>
-            </div>
-
-            <!-- Card 3: Inactive -->
-            <div class="bg-white border border-green-100 hover:border-green-200 p-5 rounded-xl flex flex-col justify-between shadow-sm relative group overflow-hidden transition duration-300">
-              <div class="absolute top-0 right-0 w-24 h-24 bg-rose-400/5 rounded-full blur-2xl group-hover:bg-rose-400/10 transition duration-300"></div>
-              <div class="flex items-start justify-between">
-                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Inactive Status</span>
-                <div class="h-8 w-8 rounded-lg bg-rose-50 flex items-center justify-center border border-rose-100">
-                  <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
-                </div>
-              </div>
-              <div class="mt-4">
-                <h3 id="stat-inactive-students" class="text-3xl font-extrabold text-rose-500 tracking-tight font-sans">0</h3>
-                <p class="text-[10px] text-gray-400 font-mono mt-1">Suspended / Deactivated</p>
-              </div>
-            </div>
-
-            <!-- Card 4: Batches -->
-            <div class="bg-white border border-green-100 hover:border-green-200 p-5 rounded-xl flex flex-col justify-between shadow-sm relative group overflow-hidden transition duration-300">
-              <div class="absolute top-0 right-0 w-24 h-24 bg-purple-400/5 rounded-full blur-2xl group-hover:bg-purple-400/10 transition duration-300"></div>
-              <div class="flex items-start justify-between">
-                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Batches</span>
-                <div class="h-8 w-8 rounded-lg bg-purple-50 flex items-center justify-center border border-purple-100">
-                  <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                </div>
-              </div>
-              <div class="mt-4">
-                <h3 id="stat-course-batches" class="text-3xl font-extrabold text-purple-500 tracking-tight font-sans">0</h3>
-                <p class="text-[10px] text-gray-400 font-mono mt-1">Unique Modules Active</p>
-              </div>
-            </div>
-
-          </section>
-
-          <section class="bg-white border border-green-100 p-5 rounded-2xl shadow-sm">
-            <div class="flex items-center justify-between border-b border-green-100 pb-3 mb-4">
-              <div>
-                <h3 class="text-xs font-bold text-green-800 uppercase tracking-wider">Import & Data Summary</h3>
-                <p class="text-[11px] text-gray-500 mt-1">Upload student spreadsheets, review rows, and merge them into the roster.</p>
-              </div>
-              <button onclick="downloadImportTemplate()" class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3 py-2 text-[11px] font-semibold rounded-lg border border-green-200">Download Excel Template</button>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div class="space-y-4">
-                <div id="import-drop-zone" class="rounded-2xl border-2 border-dashed border-green-200 bg-green-50/60 p-6 text-center">
-                  <p class="text-sm font-semibold text-green-800">Drag & drop student file here</p>
-                  <p class="text-[11px] text-gray-500 mt-1">Supports .xlsx, .xls, and .csv files</p>
-                  <label class="mt-4 inline-flex cursor-pointer items-center justify-center rounded-lg bg-custom-primary bg-custom-primary-hover px-4 py-2 text-xs font-semibold text-white">
-                    Choose File
-                    <input id="import-file-input" type="file" accept=".xlsx,.xls,.csv" class="hidden">
-                  </label>
-                </div>
-                <div class="rounded-2xl border border-green-100 bg-white p-4 space-y-2">
-                  <div class="grid grid-cols-2 gap-3 text-center text-xs">
-                    <div class="rounded-lg bg-green-50 p-3"><div id="dashboard-import-total" class="text-xl font-bold text-green-800">0</div><div class="text-[10px] text-gray-500">Total Rows</div></div>
-                    <div class="rounded-lg bg-emerald-50 p-3"><div id="dashboard-import-active" class="text-xl font-bold text-emerald-700">0</div><div class="text-[10px] text-gray-500">Active</div></div>
-                    <div class="rounded-lg bg-rose-50 p-3"><div id="dashboard-import-inactive" class="text-xl font-bold text-rose-700">0</div><div class="text-[10px] text-gray-500">Inactive</div></div>
-                    <div class="rounded-lg bg-purple-50 p-3"><div id="dashboard-import-courses" class="text-xl font-bold text-purple-700">0</div><div class="text-[10px] text-gray-500">Unique Courses</div></div>
-                  </div>
-                  <div class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-700">Invalid rows: <span id="dashboard-import-invalid">0</span></div>
-                  <button onclick="exportDashboardSummary()" class="btn-transition w-full rounded-lg border border-green-200 bg-white px-3 py-2 text-[11px] font-semibold text-green-700 hover:bg-green-50">Export Dashboard Summary</button>
-                </div>
-              </div>
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <h4 class="text-[11px] font-semibold uppercase tracking-wider text-green-700">Import Preview</h4>
-                  <div id="import-preview-status" class="text-[10px] text-gray-500">Upload a spreadsheet or CSV file to review rows before import.</div>
-                </div>
-                <input oninput="setImportPreviewSearch(this.value)" type="search" placeholder="Search uploaded rows..." class="w-full rounded-lg border border-green-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none focus:border-green-500">
-                <div id="import-preview-empty" class="rounded-2xl border border-dashed border-green-200 bg-green-50/40 p-6 text-center text-[11px] text-gray-500">The preview will appear here after you upload a file.</div>
-                <div id="import-preview-container" class="overflow-hidden rounded-2xl border border-green-100"></div>
-                <div id="import-actions" class="hidden flex flex-wrap items-center gap-3">
-                  <button id="import-add-row-btn" class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-green-700 rounded-lg">Add Row</button>
-                  <button id="import-validate-btn" class="btn-transition border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-700 rounded-lg">Validate Rows</button>
-                  <button id="import-save-btn" class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-gray-700 rounded-lg">Save Edits</button>
-                  <button id="import-valid-btn" class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-4 py-2 text-xs font-semibold rounded-lg border border-custom-primary-40">Import Valid Rows</button>
-                  <button id="import-cancel-btn" class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-gray-600 rounded-lg">Cancel Import</button>
-                  <button id="import-export-btn" class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-green-700 rounded-lg">Export Uploaded Preview</button>
-                  <button id="import-export-excel-btn" class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-green-700 rounded-lg">Export Edited Excel</button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Dashboard Sub-panels -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Event Logger Console -->
-            <div class="bg-white border border-green-100 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative group overflow-hidden">
-              <div class="flex items-center justify-between border-b border-green-100 pb-3 mb-4">
-                <h3 class="text-xs font-bold text-green-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <span class="h-2 w-2 rounded-full bg-emerald-500 inline-block pulse-dot"></span>
-                  Active Pipeline Event Logger
-                </h3>
-                <span class="text-[9px] font-mono bg-green-50 text-green-600 px-1.5 py-0.5 rounded border border-green-100">Buffer: Auto-Sync</span>
-              </div>
-              <div id="log-console" class="bg-green-50 rounded-xl p-4 h-48 overflow-y-auto font-mono text-[11px] text-green-700 space-y-2 border border-green-100">
-                <div>[00:00:01] System boot initialized successfully.</div>
-                <div>[00:00:02] Connected securely to Cloud MongoDB Atlas via Next.js API Routes.</div>
-                <div>[00:00:03] Browser LocalStorage Cache Layer Synchronized.</div>
-              </div>
-            </div>
-            <!-- Course Enrollment Matrix -->
-            <div class="bg-white border border-green-100 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative group overflow-hidden">
-              <div class="flex items-center justify-between border-b border-green-100 pb-3 mb-4">
-                <h3 class="text-xs font-bold text-green-800 uppercase tracking-wider">Course Enrollment Matrix</h3>
-                <span class="text-[9px] font-mono bg-green-50 text-green-600 px-1.5 py-0.5 rounded border border-green-100">Real-time Density</span>
-              </div>
-              <div id="course-matrix-container" class="space-y-3.5 flex-1 flex flex-col justify-center"></div>
-            </div>
-          </div>
-
+        <div
+          id="auth-success"
+          class="hidden mb-6 p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-lg flex items-center gap-2"
+        >
+          <svg
+            class="w-4 h-4 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <span id="auth-success-msg"></span>
         </div>
 
-        <!-- ========================================== -->
-        <!-- VIEW: STUDENT ROSTER                       -->
-        <!-- ========================================== -->
-        <div id="view-roster" class="hidden space-y-8">
-
-          <!-- STEP 3: ADD STUDENT FORM (collapsed) -->
-          <section id="step-3-schema" class="hidden overflow-hidden bg-white border border-green-100 rounded-2xl shadow-xl transition-all duration-300">
-            <div class="px-6 py-4 border-b border-green-100 bg-green-50/50 flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <h3 class="text-sm font-semibold text-green-900">Create Student Registration Record</h3>
-                <span class="text-[10px] font-mono bg-green-100 border border-green-200 text-green-700 px-1.5 py-0.5 rounded">Schema Validated</span>
+        <!-- VIEW: Login -->
+        <div id="auth-view-login" class="space-y-5">
+          <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+            <div>
+              <label
+                class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                >Email Address or Phone Number</label
+              >
+              <input
+                required
+                type="text"
+                id="login-identifier"
+                placeholder="admin@studenthub.io or +1234567890"
+                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+              />
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label
+                  class="block text-xs font-semibold text-green-700 uppercase tracking-wider"
+                  >Password</label
+                >
+                <button
+                  type="button"
+                  onclick="showAuthView('reset')"
+                  class="text-xs text-green-600 hover:text-green-700 font-mono transition"
+                >
+                  Forgot Password?
+                </button>
               </div>
-              <button onclick="toggleAddStudentForm()" class="text-gray-400 hover:text-green-700 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <input
+                required
+                type="password"
+                id="login-password"
+                placeholder="••••••••"
+                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+              />
+            </div>
+            <button
+              id="login-submit-btn"
+              type="submit"
+              class="btn-transition w-full bg-custom-primary bg-custom-primary-hover text-white py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-lg hover:shadow-glow-custom mt-2"
+            >
+              Secure Log In
+            </button>
+          </form>
+          <div
+            class="text-center pt-4 border-t border-green-100 flex flex-col gap-3"
+          >
+            <p class="text-xs text-gray-500">
+              Don't have an admin account?
+              <button
+                id="go-to-register-btn"
+                onclick="showAuthView('register')"
+                class="text-green-600 hover:text-green-700 font-semibold underline transition"
+              >
+                Create One
+              </button>
+            </p>
+            <div
+              class="bg-green-50 border border-green-100 p-2.5 rounded-lg flex items-center justify-between text-[10px] text-gray-500 font-mono"
+            >
+              <span
+                >Quick Login:
+                <b class="text-gray-700"
+                  >admin@studenthub.io / admin123</b
+                ></span
+              >
+              <button
+                id="autofill-btn"
+                onclick="autofillCredentials()"
+                class="bg-green-500/10 hover:bg-green-500/25 border border-green-500/20 text-green-600 px-2 py-0.5 rounded transition"
+              >
+                Autofill
               </button>
             </div>
-            <form id="add-student-form" onsubmit="handleFormSubmit(event)" class="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+          </div>
+        </div>
+
+        <!-- VIEW: Register -->
+        <div id="auth-view-register" class="hidden space-y-5">
+          <form onsubmit="handleRegisterSubmit(event)" class="space-y-4">
+            <div>
+              <label
+                class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                >Full Name</label
+              >
+              <input
+                required
+                type="text"
+                id="register-name"
+                placeholder="John Doe"
+                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                >Email Address</label
+              >
+              <input
+                required
+                type="email"
+                id="register-email"
+                placeholder="john@studenthub.io"
+                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                >Phone Number</label
+              >
+              <input
+                required
+                type="tel"
+                id="register-phone"
+                placeholder="+1234567890"
+                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+              />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Full Name <span class="text-red-500">*</span></label>
-                <input required type="text" id="form-name" placeholder="Amara Chen" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
+                <label
+                  class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                  >Password</label
+                >
+                <input
+                  required
+                  type="password"
+                  id="register-password"
+                  placeholder="••••••••"
+                  class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+                />
               </div>
               <div>
-                <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Roll Number <span class="text-red-500">*</span></label>
-                <input required type="text" id="form-roll" placeholder="2026CS091" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm font-mono px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
+                <label
+                  class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                  >Confirm</label
+                >
+                <input
+                  required
+                  type="password"
+                  id="register-confirm"
+                  placeholder="••••••••"
+                  class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+                />
+              </div>
+            </div>
+            <button
+              id="register-submit-btn"
+              type="submit"
+              class="btn-transition w-full bg-custom-primary bg-custom-primary-hover text-white py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-lg hover:shadow-glow-custom mt-2"
+            >
+              Create Account
+            </button>
+          </form>
+          <div class="text-center pt-4 border-t border-green-100">
+            <p class="text-xs text-gray-500">
+              Already have an account?
+              <button
+                id="go-to-login-btn"
+                onclick="showAuthView('login')"
+                class="text-green-600 hover:text-green-700 font-semibold underline transition"
+              >
+                Back to Login
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <!-- VIEW: Password Reset -->
+        <div id="auth-view-reset" class="hidden space-y-5">
+          <form onsubmit="handleResetSubmit(event)" class="space-y-4">
+            <div>
+              <label
+                class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                >Account Email or Phone Number</label
+              >
+              <div class="flex gap-2">
+                <input
+                  required
+                  type="text"
+                  id="reset-identifier"
+                  placeholder="admin@studenthub.io or +1234567890"
+                  class="flex-1 bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+                />
+                <button
+                  id="get-otp-btn"
+                  type="button"
+                  onclick="sendMockOTP()"
+                  class="btn-transition bg-green-100 hover:bg-green-200 text-green-800 px-3 py-2 text-xs font-semibold border border-green-200 rounded-lg"
+                >
+                  Get OTP
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div class="col-span-1">
+                <label
+                  class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                  >OTP Code</label
+                >
+                <input
+                  required
+                  type="text"
+                  id="reset-otp"
+                  placeholder="123456"
+                  class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm font-mono text-center px-2 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition"
+                />
+              </div>
+              <div class="col-span-2">
+                <label
+                  class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                  >New Password</label
+                >
+                <input
+                  required
+                  type="password"
+                  id="reset-password"
+                  placeholder="••••••••"
+                  class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+                />
+              </div>
+            </div>
+            <button
+              id="reset-submit-btn"
+              type="submit"
+              class="btn-transition w-full bg-custom-primary bg-custom-primary-hover text-white py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-lg hover:shadow-glow-custom mt-2"
+            >
+              Update and Log In
+            </button>
+          </form>
+          <div class="text-center pt-4 border-t border-green-100">
+            <p class="text-xs text-gray-500">
+              Remembered your credentials?
+              <button
+                id="reset-back-to-login-btn"
+                onclick="showAuthView('login')"
+                class="text-green-600 hover:text-green-700 font-semibold underline transition"
+              >
+                Back to Login
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PROTECTED MAIN APP LAYOUT                  -->
+    <!-- ========================================== -->
+    <div id="app-layout" class="hidden h-full w-full flex">
+      <!-- ==========================================
+         STEP 1: LEFT SIDEBAR NAVIGATION PANEL
+         ========================================== -->
+      <aside
+        id="step-1-sidebar"
+        class="step-highlight w-64 bg-white border-r border-green-100 flex flex-col justify-between flex-shrink-0 z-30 transition-all duration-300 relative shadow-sm"
+      >
+        <div>
+          <!-- Brand Header -->
+          <div class="p-6 border-b border-green-100 flex items-center gap-3">
+            <div
+              class="h-10 w-10 rounded-xl bg-gradient-to-tr from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/25"
+            >
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                ></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-lg font-bold text-green-900 tracking-tight">
+                Student Hub
+              </h1>
+              <span
+                class="text-xs font-mono text-green-500 tracking-wider uppercase"
+                >Portal Admin</span
+              >
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <nav class="p-4 space-y-1">
+            <button
+              id="nav-dashboard"
+              onclick="switchView('dashboard')"
+              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-green-800 bg-green-100 border border-green-200 shadow-sm transition"
+            >
+              <svg
+                class="w-5 h-5 text-custom-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"
+                ></path>
+              </svg>
+              System Dashboard
+            </button>
+            <button
+              id="nav-roster"
+              onclick="switchView('roster')"
+              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-500 hover:text-green-800 hover:bg-green-50 border border-transparent hover:border-green-100 transition"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path>
+              </svg>
+              Student Roster
+            </button>
+            <button
+              id="nav-batches"
+              onclick="switchView('batches')"
+              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-500 hover:text-green-800 hover:bg-green-50 border border-transparent hover:border-green-100 transition"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                ></path>
+              </svg>
+              Course Batches
+            </button>
+            <button
+              id="nav-sql-studio"
+              onclick="switchView('sql-studio')"
+              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-500 hover:text-green-800 hover:bg-green-50 border border-transparent hover:border-green-100 transition"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 9h8M8 13h5m-7 4h10a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"
+                ></path>
+              </svg>
+              SQL Dataset Studio
+            </button>
+            <button
+              id="nav-settings"
+              onclick="switchView('settings')"
+              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-500 hover:text-green-800 hover:bg-green-50 border border-transparent hover:border-green-100 transition"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                ></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                ></path>
+              </svg>
+              Settings
+            </button>
+          </nav>
+        </div>
+
+        <!-- User Profile & Sign Out -->
+        <div class="p-4 border-t border-green-100 bg-green-50/50">
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop"
+                class="w-10 h-10 rounded-lg object-cover ring-2 ring-green-400/30"
+                alt="Admin"
+              />
+              <span
+                class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white pulse-dot"
+              ></span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <h4
+                id="user-display-name"
+                class="text-xs font-semibold text-green-900 truncate"
+              >
+                Devon Lane
+              </h4>
+              <p
+                id="user-display-email"
+                class="text-[10px] text-green-600 truncate font-mono"
+              >
+                devon@studenthub.io
+              </p>
+            </div>
+            <button
+              id="sign-out-btn"
+              onclick="handleSignOut()"
+              title="Sign Out"
+              class="p-1.5 text-gray-400 hover:text-rose-500 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded-lg transition duration-200 flex-shrink-0"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <div
+            class="mt-4 pt-3 border-t border-green-100 flex items-center justify-between text-[10px] text-green-600 font-mono"
+          >
+            <span>V1.0.4-LTS</span>
+            <span
+              class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200"
+              >Active Session</span
+            >
+          </div>
+        </div>
+      </aside>
+
+      <!-- ==========================================
+         MAIN CONTENT AREA
+         ========================================== -->
+      <main
+        class="flex-1 flex flex-col min-w-0 overflow-y-auto bg-green-50 relative pb-16"
+      >
+        <!-- Top Header Bar -->
+        <header
+          class="h-16 border-b border-green-100 px-8 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-20 shadow-sm"
+        >
+          <div class="flex items-center gap-4">
+            <h2
+              class="text-xl font-bold text-green-900 tracking-tight flex items-center gap-2"
+            >
+              Administration Portal
+              <span
+                class="text-xs font-normal text-green-600 border border-green-200 bg-green-50 px-2 py-0.5 rounded-md"
+                >Vite-Next.js Dev Server</span
+              >
+            </h2>
+          </div>
+
+          <!-- ADD STUDENT TRIGGER -->
+          <div class="flex items-center gap-3">
+            <button
+              onclick="exportToExcel()"
+              class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3.5 py-2 text-xs font-bold rounded-lg border border-green-200 flex items-center gap-2 shadow-sm"
+            >
+              <svg
+                class="w-4 h-4 text-emerald-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+              Export Excel (CSV)
+            </button>
+            <button
+              onclick="toggleAddStudentForm()"
+              class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-4 py-2 text-xs font-bold rounded-lg shadow-lg hover:shadow-glow-custom border border-custom-primary-40 flex items-center gap-2"
+            >
+              <svg
+                class="w-4 h-4 stroke-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M12 4v16m8-8H4"
+                ></path>
+              </svg>
+              + Add New Student
+            </button>
+          </div>
+        </header>
+
+        <!-- Scrollable Viewport -->
+        <div class="p-8 space-y-8 flex-1">
+          <!-- ========================================== -->
+          <!-- VIEW: SYSTEM DASHBOARD                     -->
+          <!-- ========================================== -->
+          <div id="view-dashboard" class="space-y-8">
+            <!-- STEP 11: ANALYTICS WIDGETS -->
+            <section
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+            >
+              <!-- Card 1: Total -->
+              <div
+                class="bg-white border border-green-100 hover:border-green-200 p-5 rounded-xl flex flex-col justify-between shadow-sm relative group overflow-hidden transition duration-300"
+              >
+                <div
+                  class="absolute top-0 right-0 w-24 h-24 bg-blue-400/5 rounded-full blur-2xl group-hover:bg-blue-400/10 transition duration-300"
+                ></div>
+                <div class="flex items-start justify-between">
+                  <span
+                    class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    >Total Registered</span
+                  >
+                  <div
+                    class="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100"
+                  >
+                    <svg
+                      class="w-4 h-4 text-blue-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <h3
+                    id="stat-total-students"
+                    class="text-3xl font-extrabold text-gray-800 tracking-tight font-sans"
+                  >
+                    0
+                  </h3>
+                  <p class="text-[10px] text-gray-400 font-mono mt-1">
+                    Active + Inactive accounts
+                  </p>
+                </div>
+              </div>
+
+              <!-- Card 2: Active -->
+              <div
+                class="bg-white border border-green-100 hover:border-green-200 p-5 rounded-xl flex flex-col justify-between shadow-sm relative group overflow-hidden transition duration-300"
+              >
+                <div
+                  class="absolute top-0 right-0 w-24 h-24 bg-emerald-400/5 rounded-full blur-2xl group-hover:bg-emerald-400/10 transition duration-300"
+                ></div>
+                <div class="flex items-start justify-between">
+                  <span
+                    class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    >Active Status</span
+                  >
+                  <div
+                    class="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center border border-emerald-100"
+                  >
+                    <svg
+                      class="w-4 h-4 text-emerald-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <h3
+                    id="stat-active-students"
+                    class="text-3xl font-extrabold text-emerald-600 tracking-tight font-sans"
+                  >
+                    0
+                  </h3>
+                  <p class="text-[10px] text-gray-400 font-mono mt-1">
+                    ✓ Operating Normally
+                  </p>
+                </div>
+              </div>
+
+              <!-- Card 3: Inactive -->
+              <div
+                class="bg-white border border-green-100 hover:border-green-200 p-5 rounded-xl flex flex-col justify-between shadow-sm relative group overflow-hidden transition duration-300"
+              >
+                <div
+                  class="absolute top-0 right-0 w-24 h-24 bg-rose-400/5 rounded-full blur-2xl group-hover:bg-rose-400/10 transition duration-300"
+                ></div>
+                <div class="flex items-start justify-between">
+                  <span
+                    class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    >Inactive Status</span
+                  >
+                  <div
+                    class="h-8 w-8 rounded-lg bg-rose-50 flex items-center justify-center border border-rose-100"
+                  >
+                    <svg
+                      class="w-4 h-4 text-rose-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.2"
+                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <h3
+                    id="stat-inactive-students"
+                    class="text-3xl font-extrabold text-rose-500 tracking-tight font-sans"
+                  >
+                    0
+                  </h3>
+                  <p class="text-[10px] text-gray-400 font-mono mt-1">
+                    Suspended / Deactivated
+                  </p>
+                </div>
+              </div>
+
+              <!-- Card 4: Batches -->
+              <div
+                class="bg-white border border-green-100 hover:border-green-200 p-5 rounded-xl flex flex-col justify-between shadow-sm relative group overflow-hidden transition duration-300"
+              >
+                <div
+                  class="absolute top-0 right-0 w-24 h-24 bg-purple-400/5 rounded-full blur-2xl group-hover:bg-purple-400/10 transition duration-300"
+                ></div>
+                <div class="flex items-start justify-between">
+                  <span
+                    class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    >Total Batches</span
+                  >
+                  <div
+                    class="h-8 w-8 rounded-lg bg-purple-50 flex items-center justify-center border border-purple-100"
+                  >
+                    <svg
+                      class="w-4 h-4 text-purple-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <h3
+                    id="stat-course-batches"
+                    class="text-3xl font-extrabold text-purple-500 tracking-tight font-sans"
+                  >
+                    0
+                  </h3>
+                  <p class="text-[10px] text-gray-400 font-mono mt-1">
+                    Unique Modules Active
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="bg-white border border-green-100 p-5 rounded-2xl shadow-sm"
+            >
+              <div
+                class="flex items-center justify-between border-b border-green-100 pb-3 mb-4"
+              >
+                <div>
+                  <h3
+                    class="text-xs font-bold text-green-800 uppercase tracking-wider"
+                  >
+                    Import & Data Summary
+                  </h3>
+                  <p class="text-[11px] text-gray-500 mt-1">
+                    Upload student spreadsheets, review rows, and merge them
+                    into the roster.
+                  </p>
+                </div>
+                <button
+                  onclick="downloadImportTemplate()"
+                  class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3 py-2 text-[11px] font-semibold rounded-lg border border-green-200"
+                >
+                  Download Excel Template
+                </button>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                  <div
+                    id="import-drop-zone"
+                    class="rounded-2xl border-2 border-dashed border-green-200 bg-green-50/60 p-6 text-center"
+                  >
+                    <p class="text-sm font-semibold text-green-800">
+                      Drag & drop student file here
+                    </p>
+                    <p class="text-[11px] text-gray-500 mt-1">
+                      Supports .xlsx, .xls, and .csv files
+                    </p>
+                    <label
+                      class="mt-4 inline-flex cursor-pointer items-center justify-center rounded-lg bg-custom-primary bg-custom-primary-hover px-4 py-2 text-xs font-semibold text-white"
+                    >
+                      Choose File
+                      <input
+                        id="import-file-input"
+                        type="file"
+                        accept=".xlsx,.xls,.csv"
+                        class="hidden"
+                      />
+                    </label>
+                  </div>
+                  <div
+                    class="rounded-2xl border border-green-100 bg-white p-4 space-y-2"
+                  >
+                    <div class="grid grid-cols-2 gap-3 text-center text-xs">
+                      <div class="rounded-lg bg-green-50 p-3">
+                        <div
+                          id="dashboard-import-total"
+                          class="text-xl font-bold text-green-800"
+                        >
+                          0
+                        </div>
+                        <div class="text-[10px] text-gray-500">Total Rows</div>
+                      </div>
+                      <div class="rounded-lg bg-emerald-50 p-3">
+                        <div
+                          id="dashboard-import-active"
+                          class="text-xl font-bold text-emerald-700"
+                        >
+                          0
+                        </div>
+                        <div class="text-[10px] text-gray-500">Active</div>
+                      </div>
+                      <div class="rounded-lg bg-rose-50 p-3">
+                        <div
+                          id="dashboard-import-inactive"
+                          class="text-xl font-bold text-rose-700"
+                        >
+                          0
+                        </div>
+                        <div class="text-[10px] text-gray-500">Inactive</div>
+                      </div>
+                      <div class="rounded-lg bg-purple-50 p-3">
+                        <div
+                          id="dashboard-import-courses"
+                          class="text-xl font-bold text-purple-700"
+                        >
+                          0
+                        </div>
+                        <div class="text-[10px] text-gray-500">
+                          Unique Courses
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-700"
+                    >
+                      Invalid rows: <span id="dashboard-import-invalid">0</span>
+                    </div>
+                    <button
+                      onclick="exportDashboardSummary()"
+                      class="btn-transition w-full rounded-lg border border-green-200 bg-white px-3 py-2 text-[11px] font-semibold text-green-700 hover:bg-green-50"
+                    >
+                      Export Dashboard Summary
+                    </button>
+                  </div>
+                </div>
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between">
+                    <h4
+                      class="text-[11px] font-semibold uppercase tracking-wider text-green-700"
+                    >
+                      Import Preview
+                    </h4>
+                    <div
+                      id="import-preview-status"
+                      class="text-[10px] text-gray-500"
+                    >
+                      Upload a spreadsheet or CSV file to review rows before
+                      import.
+                    </div>
+                  </div>
+                  <input
+                    oninput="setImportPreviewSearch(this.value)"
+                    type="search"
+                    placeholder="Search uploaded rows..."
+                    class="w-full rounded-lg border border-green-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none focus:border-green-500"
+                  />
+                  <div
+                    id="import-preview-empty"
+                    class="rounded-2xl border border-dashed border-green-200 bg-green-50/40 p-6 text-center text-[11px] text-gray-500"
+                  >
+                    The preview will appear here after you upload a file.
+                  </div>
+                  <div
+                    id="import-preview-container"
+                    class="overflow-hidden rounded-2xl border border-green-100"
+                  ></div>
+                  <div
+                    id="import-actions"
+                    class="hidden flex flex-wrap items-center gap-3"
+                  >
+                    <button
+                      id="import-add-row-btn"
+                      class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-green-700 rounded-lg"
+                    >
+                      Add Row
+                    </button>
+                    <button
+                      id="import-validate-btn"
+                      class="btn-transition border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-700 rounded-lg"
+                    >
+                      Validate Rows
+                    </button>
+                    <button
+                      id="import-save-btn"
+                      class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-gray-700 rounded-lg"
+                    >
+                      Save Edits
+                    </button>
+                    <button
+                      id="import-valid-btn"
+                      class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-4 py-2 text-xs font-semibold rounded-lg border border-custom-primary-40"
+                    >
+                      Import Valid Rows
+                    </button>
+                    <button
+                      id="import-cancel-btn"
+                      class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-gray-600 rounded-lg"
+                    >
+                      Cancel Import
+                    </button>
+                    <button
+                      id="import-export-btn"
+                      class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-green-700 rounded-lg"
+                    >
+                      Export Uploaded Preview
+                    </button>
+                    <button
+                      id="import-export-excel-btn"
+                      class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-green-700 rounded-lg"
+                    >
+                      Export Edited Excel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Dashboard Sub-panels -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Event Logger Console -->
+              <div
+                class="bg-white border border-green-100 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative group overflow-hidden"
+              >
+                <div
+                  class="flex items-center justify-between border-b border-green-100 pb-3 mb-4"
+                >
+                  <h3
+                    class="text-xs font-bold text-green-800 uppercase tracking-wider flex items-center gap-1.5"
+                  >
+                    <span
+                      class="h-2 w-2 rounded-full bg-emerald-500 inline-block pulse-dot"
+                    ></span>
+                    Active Pipeline Event Logger
+                  </h3>
+                  <span
+                    class="text-[9px] font-mono bg-green-50 text-green-600 px-1.5 py-0.5 rounded border border-green-100"
+                    >Buffer: Auto-Sync</span
+                  >
+                </div>
+                <div
+                  id="log-console"
+                  class="bg-green-50 rounded-xl p-4 h-48 overflow-y-auto font-mono text-[11px] text-green-700 space-y-2 border border-green-100"
+                >
+                  <div>[00:00:01] System boot initialized successfully.</div>
+                  <div>
+                    [00:00:02] Connected securely to Cloud MongoDB Atlas via
+                    Next.js API Routes.
+                  </div>
+                  <div>
+                    [00:00:03] Browser LocalStorage Cache Layer Synchronized.
+                  </div>
+                </div>
+              </div>
+              <!-- Course Enrollment Matrix -->
+              <div
+                class="bg-white border border-green-100 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative group overflow-hidden"
+              >
+                <div
+                  class="flex items-center justify-between border-b border-green-100 pb-3 mb-4"
+                >
+                  <h3
+                    class="text-xs font-bold text-green-800 uppercase tracking-wider"
+                  >
+                    Course Enrollment Matrix
+                  </h3>
+                  <span
+                    class="text-[9px] font-mono bg-green-50 text-green-600 px-1.5 py-0.5 rounded border border-green-100"
+                    >Real-time Density</span
+                  >
+                </div>
+                <div
+                  id="course-matrix-container"
+                  class="space-y-3.5 flex-1 flex flex-col justify-center"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW: STUDENT ROSTER                       -->
+          <!-- ========================================== -->
+          <div id="view-roster" class="hidden space-y-8">
+            <!-- STEP 3: ADD STUDENT FORM (collapsed) -->
+            <section
+              id="step-3-schema"
+              class="hidden overflow-hidden bg-white border border-green-100 rounded-2xl shadow-xl transition-all duration-300"
+            >
+              <div
+                class="px-6 py-4 border-b border-green-100 bg-green-50/50 flex items-center justify-between"
+              >
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm font-semibold text-green-900">
+                    Create Student Registration Record
+                  </h3>
+                  <span
+                    class="text-[10px] font-mono bg-green-100 border border-green-200 text-green-700 px-1.5 py-0.5 rounded"
+                    >Schema Validated</span
+                  >
+                </div>
+                <button
+                  onclick="toggleAddStudentForm()"
+                  class="text-gray-400 hover:text-green-700 transition"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+              <form
+                id="add-student-form"
+                onsubmit="handleFormSubmit(event)"
+                class="p-6 grid grid-cols-1 md:grid-cols-3 gap-5"
+              >
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                    >Full Name <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    required
+                    type="text"
+                    id="form-name"
+                    placeholder="Amara Chen"
+                    class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                    >Roll Number <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    required
+                    type="text"
+                    id="form-roll"
+                    placeholder="2026CS091"
+                    class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm font-mono px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                    >Email Address <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    required
+                    type="email"
+                    id="form-email"
+                    placeholder="amara.chen@studenthub.edu"
+                    class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                    >Course Title <span class="text-red-500">*</span></label
+                  >
+                  <select
+                    required
+                    id="form-course"
+                    class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled selected>
+                      Select course module...
+                    </option>
+                    <option>Computer Science &amp; AI</option>
+                    <option>Electrical Engineering</option>
+                    <option>Bioinformatics</option>
+                    <option>Mechanical Systems</option>
+                    <option>Data Analytics</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                    >Age <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    required
+                    type="number"
+                    id="form-age"
+                    min="16"
+                    max="99"
+                    placeholder="21"
+                    class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                    >Status <span class="text-red-500">*</span></label
+                  >
+                  <select
+                    required
+                    id="form-status"
+                    class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition appearance-none cursor-pointer"
+                  >
+                    <option value="Active">Active Status</option>
+                    <option value="Inactive">Inactive Status</option>
+                  </select>
+                </div>
+                <div
+                  class="md:col-span-3 flex justify-end gap-3 mt-2 pt-4 border-t border-green-100"
+                >
+                  <button
+                    type="button"
+                    onclick="toggleAddStudentForm()"
+                    class="btn-transition px-4 py-2 text-xs font-semibold text-gray-500 hover:text-green-800 bg-gray-100 hover:bg-green-100 border border-gray-200 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-5 py-2 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-md"
+                  >
+                    Register Student
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <!-- SEARCH BAR -->
+            <section class="relative">
+              <div class="relative flex items-center">
+                <span class="absolute left-4 text-slate-500">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2.5"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    ></path>
+                  </svg>
+                </span>
+                <input
+                  onkeyup="handleSearch(this.value)"
+                  type="text"
+                  placeholder="🔍 Search student roster by name, unique roll number, or enrolled course..."
+                  class="w-full bg-white hover:bg-green-50 border border-green-200 focus:border-green-500 text-gray-700 pl-12 pr-6 py-3.5 rounded-xl focus:outline-none focus:ring-1 border-custom-primary-40 focus:ring-custom-primary transition text-sm shadow-sm placeholder-gray-400"
+                />
+              </div>
+            </section>
+
+            <!-- ROSTER GRID -->
+            <section id="step-6-grid" class="relative space-y-6">
+              <div
+                class="flex items-center justify-between border-b border-green-100 pb-3"
+              >
+                <div class="flex items-center gap-2">
+                  <h3
+                    class="text-sm font-bold text-green-800 uppercase tracking-wider"
+                  >
+                    Current Database Roster
+                  </h3>
+                  <span
+                    id="filtered-count"
+                    class="text-xs font-mono font-bold bg-green-50 px-2 py-0.5 rounded border border-green-200 text-green-600"
+                    >0 Items</span
+                  >
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    onclick="createBlankStudentSheet()"
+                    class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3 py-2 text-[11px] font-semibold rounded-lg border border-green-200"
+                  >
+                    Create Blank Excel Sheet
+                  </button>
+                  <button
+                    onclick="exportRosterFiltered()"
+                    class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3 py-2 text-[11px] font-semibold rounded-lg border border-green-200"
+                  >
+                    Export Roster
+                  </button>
+                  <button
+                    onclick="clearDatabase()"
+                    class="text-xs text-rose-500 hover:text-rose-600 transition flex items-center gap-1 font-mono"
+                  >
+                    Clear Cache State
+                  </button>
+                </div>
+              </div>
+              <div
+                id="student-roster-viewport"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              ></div>
+
+              <!-- EMPTY STATE -->
+              <div
+                id="step-4-empty"
+                class="hidden border border-dashed border-green-200 p-12 rounded-2xl flex-col items-center justify-center text-center relative group"
+              >
+                <div
+                  class="h-16 w-16 rounded-2xl bg-green-50 border border-green-200 flex items-center justify-center text-green-400 mb-4 group-hover:scale-105 transition duration-300"
+                >
+                  <svg
+                    class="w-8 h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    ></path>
+                  </svg>
+                </div>
+                <h4 class="text-sm font-semibold text-green-800">
+                  No records found
+                </h4>
+                <p class="text-xs text-gray-500 mt-1 max-w-sm">
+                  The LocalStorage cache layer is currently empty. Click the
+                  button below to seed demo profiles.
+                </p>
+                <button
+                  onclick="seedMockData()"
+                  class="btn-transition mt-4 px-4 py-2 text-xs font-semibold text-custom-primary hover:text-white bg-custom-primary/10 hover:bg-custom-primary rounded-lg border border-custom-primary-20 hover:border-custom-primary-40"
+                >
+                  Load Mock Fallback Data Array
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW: COURSE BATCHES                       -->
+          <!-- ========================================== -->
+          <div id="view-batches" class="hidden space-y-8">
+            <div
+              class="flex items-center justify-between border-b border-green-100 pb-3"
+            >
+              <div>
+                <h3
+                  class="text-sm font-bold text-green-800 uppercase tracking-wider"
+                >
+                  Enrolled Course Directory
+                </h3>
+                <p class="text-xs text-gray-500 mt-1">
+                  Breakdown of student accounts categorized by academic course
+                  modules.
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  onclick="exportCourseBatches()"
+                  class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3 py-2 text-[11px] font-semibold rounded-lg border border-green-200"
+                >
+                  Export Course Batches
+                </button>
+                <span
+                  class="text-xs bg-purple-50 border border-purple-200 px-2 py-0.5 rounded text-purple-600 font-mono"
+                  >Dynamic Groups</span
+                >
+              </div>
+            </div>
+            <div
+              id="batches-grid-container"
+              class="grid grid-cols-1 md:grid-cols-2 gap-6"
+            ></div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW: SQL DATASET STUDIO                  -->
+          <!-- ========================================== -->
+          <div id="view-sql-studio" class="hidden space-y-8">
+            <div
+              class="flex items-center justify-between border-b border-green-100 pb-3"
+            >
+              <div>
+                <h3
+                  class="text-sm font-bold text-green-800 uppercase tracking-wider"
+                >
+                  SQL Dataset Studio
+                </h3>
+                <p class="text-xs text-gray-500 mt-1">
+                  Query a browser-only copy of the student roster with read-only
+                  SQL.
+                </p>
+              </div>
+              <span
+                class="text-xs bg-slate-50 border border-slate-200 px-2 py-0.5 rounded text-slate-600 font-mono"
+                >AlaSQL In-Memory</span
+              >
+            </div>
+            <div
+              class="bg-white border border-green-100 rounded-2xl shadow-sm p-6 space-y-4"
+            >
+              <div class="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  data-sample-sql="SELECT * FROM students"
+                  class="btn-transition rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[11px] font-semibold text-green-700"
+                >
+                  Sample 1: List Students
+                </button>
+                <button
+                  type="button"
+                  data-sample-sql="SELECT course, COUNT(*) AS total_students FROM students GROUP BY course ORDER BY total_students DESC"
+                  class="btn-transition rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[11px] font-semibold text-green-700"
+                >
+                  Sample 2: Course Totals
+                </button>
+                <button
+                  type="button"
+                  data-sample-sql="SELECT status, COUNT(*) AS total_students FROM students GROUP BY status"
+                  class="btn-transition rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[11px] font-semibold text-green-700"
+                >
+                  Sample 3: Status Counts
+                </button>
+                <button
+                  type="button"
+                  data-sample-sql="SELECT * FROM students WHERE status = 'Active'"
+                  class="btn-transition rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[11px] font-semibold text-green-700"
+                >
+                  Sample 4: Active Students
+                </button>
+              </div>
+              <textarea
+                id="sql-editor"
+                class="min-h-[220px] w-full rounded-xl border border-green-200 bg-green-50 px-4 py-3 font-mono text-sm text-slate-700 focus:border-green-500 focus:outline-none"
+                spellcheck="false"
+              >
+SELECT * FROM students</textarea>
+              <div class="flex flex-wrap items-center gap-3">
+                <button
+                  id="sql-run-btn"
+                  class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-4 py-2 text-xs font-bold rounded-lg border border-custom-primary-40"
+                >
+                  Run Query
+                </button>
+                <button
+                  id="sql-reset-btn"
+                  class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-gray-600 rounded-lg"
+                >
+                  Reset Query
+                </button>
+                <button
+                  id="sql-export-btn"
+                  class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-green-700 rounded-lg"
+                >
+                  Export Results
+                </button>
+                <div class="text-[11px] text-slate-500" id="sql-row-count">
+                  0 rows
+                </div>
+              </div>
+              <div id="sql-error" class="text-[11px] text-emerald-500">
+                Ready to query the in-memory students dataset.
+              </div>
+              <div class="overflow-x-auto rounded-xl border border-green-100">
+                <table
+                  class="min-w-full text-left text-xs"
+                  id="sql-result-table"
+                ></table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW: SETTINGS                             -->
+          <!-- ========================================== -->
+          <div id="view-settings" class="hidden space-y-8">
+            <div
+              class="flex items-center justify-between border-b border-green-100 pb-3"
+            >
+              <div>
+                <h3
+                  class="text-sm font-bold text-green-800 uppercase tracking-wider"
+                >
+                  System Administration Settings
+                </h3>
+                <p class="text-xs text-gray-500 mt-1">
+                  Configure development server environment parameters, caching,
+                  and visuals.
+                </p>
+              </div>
+              <span
+                class="text-xs bg-green-50 border border-green-200 px-2 py-0.5 rounded text-green-600 font-mono"
+                >Config V1</span
+              >
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Theme Presets -->
+              <div
+                class="bg-white border border-green-100 p-6 rounded-2xl shadow-sm space-y-4"
+              >
+                <h4 class="text-sm font-bold text-green-900">
+                  Interactive Accent Theme Presetter
+                </h4>
+                <p class="text-xs text-gray-500">
+                  Modify global border highlights, glows, and action button
+                  accents instantly.
+                </p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                  <button
+                    onclick="changeThemePreset('blue')"
+                    class="btn-transition px-3 py-2 text-xs font-semibold text-blue-600 hover:text-white bg-blue-50 hover:bg-blue-600 rounded-lg border border-blue-200 hover:border-blue-500 flex items-center gap-1.5 justify-center"
+                  >
+                    <span class="h-2 w-2 rounded-full bg-blue-500"></span> Cyber
+                    Blue
+                  </button>
+                  <button
+                    onclick="changeThemePreset('emerald')"
+                    class="btn-transition px-3 py-2 text-xs font-semibold text-emerald-600 hover:text-white bg-emerald-50 hover:bg-emerald-600 rounded-lg border border-emerald-200 hover:border-emerald-500 flex items-center gap-1.5 justify-center"
+                  >
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                    Forest Green
+                  </button>
+                  <button
+                    onclick="changeThemePreset('amber')"
+                    class="btn-transition px-3 py-2 text-xs font-semibold text-amber-600 hover:text-white bg-amber-50 hover:bg-amber-600 rounded-lg border border-amber-200 hover:border-amber-500 flex items-center gap-1.5 justify-center"
+                  >
+                    <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                    Sunset Orange
+                  </button>
+                  <button
+                    onclick="changeThemePreset('purple')"
+                    class="btn-transition px-3 py-2 text-xs font-semibold text-purple-600 hover:text-white bg-purple-50 hover:bg-purple-600 rounded-lg border border-purple-200 hover:border-purple-500 flex items-center gap-1.5 justify-center"
+                  >
+                    <span class="h-2 w-2 rounded-full bg-purple-500"></span>
+                    Nebula Dusk
+                  </button>
+                  <button
+                    onclick="changeThemePreset('rose')"
+                    class="btn-transition px-3 py-2 text-xs font-semibold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 rounded-lg border border-rose-200 hover:border-rose-500 flex items-center gap-1.5 justify-center"
+                  >
+                    <span class="h-2 w-2 rounded-full bg-rose-500"></span>
+                    Crimson Rogue
+                  </button>
+                </div>
+              </div>
+              <!-- MongoDB Config -->
+              <div
+                class="bg-white border border-green-100 p-6 rounded-2xl shadow-sm space-y-4"
+              >
+                <h4 class="text-sm font-bold text-green-900">
+                  Database Pipeline Configuration
+                </h4>
+                <p class="text-xs text-gray-500">
+                  Control active MongoDB connection status. Simulate cluster
+                  failover states.
+                </p>
+                <div class="space-y-3">
+                  <div>
+                    <label
+                      class="block text-[10px] font-semibold text-green-600 uppercase mb-1"
+                      >Atlas Connection URI</label
+                    >
+                    <input
+                      type="text"
+                      id="atlas-uri-input"
+                      value="mongodb+srv://admin:cluster0-prod@studenthub.mongodb.net/atlas"
+                      readonly
+                      class="w-full bg-green-50 border border-green-200 text-gray-600 text-xs px-3 py-2 rounded-lg focus:outline-none font-mono"
+                    />
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-2 border-t border-green-100"
+                  >
+                    <span class="text-xs text-gray-700"
+                      >Simulate Connection Failures</span
+                    >
+                    <label
+                      class="relative inline-flex items-center cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        id="db-fail-toggle"
+                        onchange="toggleDbStatus(this.checked)"
+                        class="sr-only peer"
+                      />
+                      <div
+                        class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500 peer-checked:after:bg-white animate-all duration-300"
+                      ></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!-- Cache Controls -->
+              <div
+                class="bg-white border border-green-100 p-6 rounded-2xl shadow-sm space-y-4 md:col-span-2"
+              >
+                <h4 class="text-sm font-bold text-green-900">
+                  Database Synchronization Control
+                </h4>
+                <p class="text-xs text-gray-500">
+                  Bulk seed or completely wipe current cache states on browser
+                  LocalStorage layers.
+                </p>
+                <div class="flex items-center gap-3">
+                  <button
+                    onclick="seedMockData()"
+                    class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-4 py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-sm"
+                  >
+                    Seed Backup Mock Array
+                  </button>
+                  <button
+                    onclick="clearDatabase()"
+                    class="btn-transition px-4 py-2.5 text-xs font-semibold text-rose-500 hover:text-white bg-white hover:bg-rose-50 border border-rose-200 hover:border-rose-400 rounded-lg"
+                  >
+                    Flush Database Cache
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PERSISTENCE STATUS FOOTER BAR -->
+        <footer
+          class="h-12 border-t border-green-100 bg-white/80 backdrop-blur-md fixed bottom-0 left-64 right-0 px-6 flex items-center justify-between text-xs z-20 shadow-sm"
+        >
+          <div id="step-10-sync" class="flex items-center gap-2">
+            <div
+              id="sync-pulse"
+              class="h-2 w-2 rounded-full bg-emerald-500 pulse-dot"
+            ></div>
+            <span
+              id="sync-status-text"
+              class="font-mono text-[10px] text-gray-500 transition-colors duration-300"
+              >✓ Browser LocalStorage Cache Layer Synchronized</span
+            >
+          </div>
+          <div id="step-12-endpoint" class="flex items-center gap-2">
+            <div
+              class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md text-[10px] text-emerald-600 font-medium transition-colors duration-300"
+            >
+              <span
+                class="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block pulse-dot"
+              ></span>
+              Pipeline Connected Securely to Cloud MongoDB Atlas via Next.js API
+              Routes
+            </div>
+          </div>
+        </footer>
+      </main>
+
+      <!-- ==========================================
+         STEP 7: EDIT STUDENT MODAL OVERLAY
+         ========================================== -->
+      <div
+        id="step-7-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-green-950/30 backdrop-blur-md hidden transition-all duration-300"
+      >
+        <div
+          class="bg-white border border-green-100 rounded-2xl w-full max-w-lg shadow-2xl shadow-green-100 overflow-hidden"
+        >
+          <div
+            class="px-6 py-4 border-b border-green-100 bg-green-50/60 flex items-center justify-between"
+          >
+            <h3 class="text-sm font-bold text-green-900 tracking-wide">
+              Update Student Record
+            </h3>
+            <button
+              onclick="closeEditModal()"
+              class="text-gray-400 hover:text-green-700 transition"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <form
+            id="edit-student-form"
+            onsubmit="handleEditFormSubmit(event)"
+            class="p-6 space-y-4"
+          >
+            <input type="hidden" id="edit-id" />
+            <div>
+              <label
+                class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                >Full Name</label
+              >
+              <input
+                required
+                type="text"
+                id="edit-name"
+                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition"
+              />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                  >Roll Number</label
+                >
+                <input
+                  required
+                  type="text"
+                  id="edit-roll"
+                  class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm font-mono px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition"
+                />
               </div>
               <div>
-                <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Email Address <span class="text-red-500">*</span></label>
-                <input required type="email" id="form-email" placeholder="amara.chen@studenthub.edu" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition placeholder-gray-400">
+                <label
+                  class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                  >Age</label
+                >
+                <input
+                  required
+                  type="number"
+                  id="edit-age"
+                  min="16"
+                  max="99"
+                  class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition"
+                />
               </div>
+            </div>
+            <div>
+              <label
+                class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                >Email Address</label
+              >
+              <input
+                required
+                type="email"
+                id="edit-email"
+                class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition"
+              />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Course Title <span class="text-red-500">*</span></label>
-                <select required id="form-course" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition appearance-none cursor-pointer">
-                  <option value="" disabled selected>Select course module...</option>
+                <label
+                  class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                  >Course Title</label
+                >
+                <select
+                  required
+                  id="edit-course"
+                  class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition cursor-pointer"
+                >
                   <option>Computer Science &amp; AI</option>
                   <option>Electrical Engineering</option>
                   <option>Bioinformatics</option>
@@ -462,285 +1749,115 @@
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Age <span class="text-red-500">*</span></label>
-                <input required type="number" id="form-age" min="16" max="99" placeholder="21" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Status <span class="text-red-500">*</span></label>
-                <select required id="form-status" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition appearance-none cursor-pointer">
-                  <option value="Active">Active Status</option>
-                  <option value="Inactive">Inactive Status</option>
+                <label
+                  class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"
+                  >Status</label
+                >
+                <select
+                  required
+                  id="edit-status"
+                  class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition cursor-pointer"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
                 </select>
               </div>
-              <div class="md:col-span-3 flex justify-end gap-3 mt-2 pt-4 border-t border-green-100">
-                <button type="button" onclick="toggleAddStudentForm()" class="btn-transition px-4 py-2 text-xs font-semibold text-gray-500 hover:text-green-800 bg-gray-100 hover:bg-green-100 border border-gray-200 rounded-lg">Cancel</button>
-                <button type="submit" class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-5 py-2 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-md">Register Student</button>
-              </div>
-            </form>
-          </section>
-
-          <!-- SEARCH BAR -->
-          <section class="relative">
-            <div class="relative flex items-center">
-              <span class="absolute left-4 text-slate-500">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              </span>
-              <input onkeyup="handleSearch(this.value)" type="text"
-                placeholder="🔍 Search student roster by name, unique roll number, or enrolled course..."
-                class="w-full bg-white hover:bg-green-50 border border-green-200 focus:border-green-500 text-gray-700 pl-12 pr-6 py-3.5 rounded-xl focus:outline-none focus:ring-1 border-custom-primary-40 focus:ring-custom-primary transition text-sm shadow-sm placeholder-gray-400">
             </div>
-          </section>
-
-          <!-- ROSTER GRID -->
-          <section id="step-6-grid" class="relative space-y-6">
-            <div class="flex items-center justify-between border-b border-green-100 pb-3">
-              <div class="flex items-center gap-2">
-                <h3 class="text-sm font-bold text-green-800 uppercase tracking-wider">Current Database Roster</h3>
-                <span id="filtered-count" class="text-xs font-mono font-bold bg-green-50 px-2 py-0.5 rounded border border-green-200 text-green-600">0 Items</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <button onclick="createBlankStudentSheet()" class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3 py-2 text-[11px] font-semibold rounded-lg border border-green-200">Create Blank Excel Sheet</button>
-                <button onclick="exportRosterFiltered()" class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3 py-2 text-[11px] font-semibold rounded-lg border border-green-200">Export Roster</button>
-                <button onclick="clearDatabase()" class="text-xs text-rose-500 hover:text-rose-600 transition flex items-center gap-1 font-mono">Clear Cache State</button>
-              </div>
-            </div>
-            <div id="student-roster-viewport" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
-            <!-- EMPTY STATE -->
-            <div id="step-4-empty" class="hidden border border-dashed border-green-200 p-12 rounded-2xl flex-col items-center justify-center text-center relative group">
-              <div class="h-16 w-16 rounded-2xl bg-green-50 border border-green-200 flex items-center justify-center text-green-400 mb-4 group-hover:scale-105 transition duration-300">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-              </div>
-              <h4 class="text-sm font-semibold text-green-800">No records found</h4>
-              <p class="text-xs text-gray-500 mt-1 max-w-sm">The LocalStorage cache layer is currently empty. Click the button below to seed demo profiles.</p>
-              <button onclick="seedMockData()" class="btn-transition mt-4 px-4 py-2 text-xs font-semibold text-custom-primary hover:text-white bg-custom-primary/10 hover:bg-custom-primary rounded-lg border border-custom-primary-20 hover:border-custom-primary-40">
-                Load Mock Fallback Data Array
+            <div
+              class="flex justify-end gap-3 pt-4 border-t border-green-100 mt-6"
+            >
+              <button
+                type="button"
+                onclick="closeEditModal()"
+                class="btn-transition px-4 py-2.5 text-xs font-semibold text-gray-500 hover:text-green-800 bg-gray-100 hover:bg-green-100 border border-gray-200 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-5 py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-md"
+              >
+                Save Changes
               </button>
             </div>
-
-          </section>
+          </form>
         </div>
-
-        <!-- ========================================== -->
-        <!-- VIEW: COURSE BATCHES                       -->
-        <!-- ========================================== -->
-        <div id="view-batches" class="hidden space-y-8">
-          <div class="flex items-center justify-between border-b border-green-100 pb-3">
-            <div>
-              <h3 class="text-sm font-bold text-green-800 uppercase tracking-wider">Enrolled Course Directory</h3>
-              <p class="text-xs text-gray-500 mt-1">Breakdown of student accounts categorized by academic course modules.</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="exportCourseBatches()" class="btn-transition bg-white hover:bg-green-50 text-gray-700 px-3 py-2 text-[11px] font-semibold rounded-lg border border-green-200">Export Course Batches</button>
-              <span class="text-xs bg-purple-50 border border-purple-200 px-2 py-0.5 rounded text-purple-600 font-mono">Dynamic Groups</span>
-            </div>
-          </div>
-          <div id="batches-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- VIEW: SQL DATASET STUDIO                  -->
-        <!-- ========================================== -->
-        <div id="view-sql-studio" class="hidden space-y-8">
-          <div class="flex items-center justify-between border-b border-green-100 pb-3">
-            <div>
-              <h3 class="text-sm font-bold text-green-800 uppercase tracking-wider">SQL Dataset Studio</h3>
-              <p class="text-xs text-gray-500 mt-1">Query a browser-only copy of the student roster with read-only SQL.</p>
-            </div>
-            <span class="text-xs bg-slate-50 border border-slate-200 px-2 py-0.5 rounded text-slate-600 font-mono">AlaSQL In-Memory</span>
-          </div>
-          <div class="bg-white border border-green-100 rounded-2xl shadow-sm p-6 space-y-4">
-            <div class="flex flex-wrap gap-2">
-              <button type="button" data-sample-sql="SELECT * FROM students" class="btn-transition rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[11px] font-semibold text-green-700">Sample 1: List Students</button>
-              <button type="button" data-sample-sql="SELECT course, COUNT(*) AS total_students FROM students GROUP BY course ORDER BY total_students DESC" class="btn-transition rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[11px] font-semibold text-green-700">Sample 2: Course Totals</button>
-              <button type="button" data-sample-sql="SELECT status, COUNT(*) AS total_students FROM students GROUP BY status" class="btn-transition rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[11px] font-semibold text-green-700">Sample 3: Status Counts</button>
-              <button type="button" data-sample-sql="SELECT * FROM students WHERE status = 'Active'" class="btn-transition rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[11px] font-semibold text-green-700">Sample 4: Active Students</button>
-            </div>
-            <textarea id="sql-editor" class="min-h-[220px] w-full rounded-xl border border-green-200 bg-green-50 px-4 py-3 font-mono text-sm text-slate-700 focus:border-green-500 focus:outline-none" spellcheck="false">SELECT * FROM students</textarea>
-            <div class="flex flex-wrap items-center gap-3">
-              <button id="sql-run-btn" class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-4 py-2 text-xs font-bold rounded-lg border border-custom-primary-40">Run Query</button>
-              <button id="sql-reset-btn" class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-gray-600 rounded-lg">Reset Query</button>
-              <button id="sql-export-btn" class="btn-transition border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-green-700 rounded-lg">Export Results</button>
-              <div class="text-[11px] text-slate-500" id="sql-row-count">0 rows</div>
-            </div>
-            <div id="sql-error" class="text-[11px] text-emerald-500">Ready to query the in-memory students dataset.</div>
-            <div class="overflow-x-auto rounded-xl border border-green-100">
-              <table class="min-w-full text-left text-xs" id="sql-result-table"></table>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- VIEW: SETTINGS                             -->
-        <!-- ========================================== -->
-        <div id="view-settings" class="hidden space-y-8">
-          <div class="flex items-center justify-between border-b border-green-100 pb-3">
-            <div>
-              <h3 class="text-sm font-bold text-green-800 uppercase tracking-wider">System Administration Settings</h3>
-              <p class="text-xs text-gray-500 mt-1">Configure development server environment parameters, caching, and visuals.</p>
-            </div>
-            <span class="text-xs bg-green-50 border border-green-200 px-2 py-0.5 rounded text-green-600 font-mono">Config V1</span>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Theme Presets -->
-            <div class="bg-white border border-green-100 p-6 rounded-2xl shadow-sm space-y-4">
-              <h4 class="text-sm font-bold text-green-900">Interactive Accent Theme Presetter</h4>
-              <p class="text-xs text-gray-500">Modify global border highlights, glows, and action button accents instantly.</p>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-                <button onclick="changeThemePreset('blue')"    class="btn-transition px-3 py-2 text-xs font-semibold text-blue-600    hover:text-white bg-blue-50    hover:bg-blue-600    rounded-lg border border-blue-200    hover:border-blue-500    flex items-center gap-1.5 justify-center"><span class="h-2 w-2 rounded-full bg-blue-500"></span>    Cyber Blue</button>
-                <button onclick="changeThemePreset('emerald')" class="btn-transition px-3 py-2 text-xs font-semibold text-emerald-600 hover:text-white bg-emerald-50 hover:bg-emerald-600 rounded-lg border border-emerald-200 hover:border-emerald-500 flex items-center gap-1.5 justify-center"><span class="h-2 w-2 rounded-full bg-emerald-500"></span> Forest Green</button>
-                <button onclick="changeThemePreset('amber')"   class="btn-transition px-3 py-2 text-xs font-semibold text-amber-600   hover:text-white bg-amber-50   hover:bg-amber-600   rounded-lg border border-amber-200   hover:border-amber-500   flex items-center gap-1.5 justify-center"><span class="h-2 w-2 rounded-full bg-amber-500"></span>   Sunset Orange</button>
-                <button onclick="changeThemePreset('purple')"  class="btn-transition px-3 py-2 text-xs font-semibold text-purple-600  hover:text-white bg-purple-50  hover:bg-purple-600  rounded-lg border border-purple-200  hover:border-purple-500  flex items-center gap-1.5 justify-center"><span class="h-2 w-2 rounded-full bg-purple-500"></span>  Nebula Dusk</button>
-                <button onclick="changeThemePreset('rose')"    class="btn-transition px-3 py-2 text-xs font-semibold text-rose-600    hover:text-white bg-rose-50    hover:bg-rose-600    rounded-lg border border-rose-200    hover:border-rose-500    flex items-center gap-1.5 justify-center"><span class="h-2 w-2 rounded-full bg-rose-500"></span>    Crimson Rogue</button>
-              </div>
-            </div>
-            <!-- MongoDB Config -->
-            <div class="bg-white border border-green-100 p-6 rounded-2xl shadow-sm space-y-4">
-              <h4 class="text-sm font-bold text-green-900">Database Pipeline Configuration</h4>
-              <p class="text-xs text-gray-500">Control active MongoDB connection status. Simulate cluster failover states.</p>
-              <div class="space-y-3">
-                <div>
-                  <label class="block text-[10px] font-semibold text-green-600 uppercase mb-1">Atlas Connection URI</label>
-                  <input type="text" id="atlas-uri-input" value="mongodb+srv://admin:cluster0-prod@studenthub.mongodb.net/atlas" readonly class="w-full bg-green-50 border border-green-200 text-gray-600 text-xs px-3 py-2 rounded-lg focus:outline-none font-mono">
-                </div>
-                <div class="flex items-center justify-between pt-2 border-t border-green-100">
-                  <span class="text-xs text-gray-700">Simulate Connection Failures</span>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="db-fail-toggle" onchange="toggleDbStatus(this.checked)" class="sr-only peer">
-                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500 peer-checked:after:bg-white animate-all duration-300"></div>
-                  </label>
-                </div>
-              </div>
-            </div>
-            <!-- Cache Controls -->
-            <div class="bg-white border border-green-100 p-6 rounded-2xl shadow-sm space-y-4 md:col-span-2">
-              <h4 class="text-sm font-bold text-green-900">Database Synchronization Control</h4>
-              <p class="text-xs text-gray-500">Bulk seed or completely wipe current cache states on browser LocalStorage layers.</p>
-              <div class="flex items-center gap-3">
-                <button onclick="seedMockData()" class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-4 py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-sm">Seed Backup Mock Array</button>
-                <button onclick="clearDatabase()" class="btn-transition px-4 py-2.5 text-xs font-semibold text-rose-500 hover:text-white bg-white hover:bg-rose-50 border border-rose-200 hover:border-rose-400 rounded-lg">Flush Database Cache</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      <!-- PERSISTENCE STATUS FOOTER BAR -->
-      <footer class="h-12 border-t border-green-100 bg-white/80 backdrop-blur-md fixed bottom-0 left-64 right-0 px-6 flex items-center justify-between text-xs z-20 shadow-sm">
-        <div id="step-10-sync" class="flex items-center gap-2">
-          <div id="sync-pulse" class="h-2 w-2 rounded-full bg-emerald-500 pulse-dot"></div>
-          <span id="sync-status-text" class="font-mono text-[10px] text-gray-500 transition-colors duration-300">✓ Browser LocalStorage Cache Layer Synchronized</span>
-        </div>
-        <div id="step-12-endpoint" class="flex items-center gap-2">
-          <div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md text-[10px] text-emerald-600 font-medium transition-colors duration-300">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block pulse-dot"></span>
-            Pipeline Connected Securely to Cloud MongoDB Atlas via Next.js API Routes
-          </div>
-        </div>
-      </footer>
-
-    </main>
-
-    <!-- ==========================================
-         STEP 7: EDIT STUDENT MODAL OVERLAY
-         ========================================== -->
-    <div id="step-7-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-green-950/30 backdrop-blur-md hidden transition-all duration-300">
-      <div class="bg-white border border-green-100 rounded-2xl w-full max-w-lg shadow-2xl shadow-green-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-green-100 bg-green-50/60 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-green-900 tracking-wide">Update Student Record</h3>
-          <button onclick="closeEditModal()" class="text-gray-400 hover:text-green-700 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-          </button>
-        </div>
-        <form id="edit-student-form" onsubmit="handleEditFormSubmit(event)" class="p-6 space-y-4">
-          <input type="hidden" id="edit-id">
-          <div>
-            <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Full Name</label>
-            <input required type="text" id="edit-name" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition">
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Roll Number</label>
-              <input required type="text" id="edit-roll" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm font-mono px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Age</label>
-              <input required type="number" id="edit-age" min="16" max="99" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition">
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Email Address</label>
-            <input required type="email" id="edit-email" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition">
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Course Title</label>
-              <select required id="edit-course" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition cursor-pointer">
-                <option>Computer Science &amp; AI</option>
-                <option>Electrical Engineering</option>
-                <option>Bioinformatics</option>
-                <option>Mechanical Systems</option>
-                <option>Data Analytics</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-green-700 uppercase tracking-wider mb-2">Status</label>
-              <select required id="edit-status" class="w-full bg-green-50 border border-green-200 focus:border-green-500 text-gray-800 text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500/50 transition cursor-pointer">
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-              </select>
-            </div>
-          </div>
-          <div class="flex justify-end gap-3 pt-4 border-t border-green-100 mt-6">
-            <button type="button" onclick="closeEditModal()" class="btn-transition px-4 py-2.5 text-xs font-semibold text-gray-500 hover:text-green-800 bg-gray-100 hover:bg-green-100 border border-gray-200 rounded-lg">Cancel</button>
-            <button type="submit" class="btn-transition bg-custom-primary bg-custom-primary-hover text-white px-5 py-2.5 text-xs font-bold rounded-lg border border-custom-primary-40 shadow-md">Save Changes</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- ==========================================
+      <!-- ==========================================
          DELETE CONFIRMATION MODAL
          ========================================== -->
-    <div id="delete-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-green-950/30 backdrop-blur-md hidden transition-all duration-300">
-      <div class="bg-white border border-green-100 rounded-2xl w-full max-w-sm shadow-2xl shadow-green-100 overflow-hidden p-6">
-        <div class="text-center">
-          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-rose-50 border border-rose-200 text-rose-500 mb-4">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-          </div>
-          <h3 class="text-base font-bold text-green-900 mb-2">Delete Student Record</h3>
-          <p class="text-xs text-gray-500 mb-6 leading-relaxed">Are you sure you want to permanently delete this student record? This action cannot be undone.</p>
-          <div class="flex items-center justify-center gap-3">
-            <button id="cancel-delete-btn" onclick="closeDeleteModal()" class="btn-transition flex-1 px-4 py-2.5 text-xs font-semibold text-gray-500 hover:text-green-800 bg-gray-100 hover:bg-green-100 border border-gray-200 rounded-lg">Cancel</button>
-            <button id="confirm-delete-btn" onclick="executeDeleteStudent()" class="btn-transition flex-1 px-4 py-2.5 text-xs font-semibold text-white bg-rose-500 hover:bg-rose-600 rounded-lg border border-rose-400 shadow-md">Delete Permanent</button>
+      <div
+        id="delete-confirm-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-green-950/30 backdrop-blur-md hidden transition-all duration-300"
+      >
+        <div
+          class="bg-white border border-green-100 rounded-2xl w-full max-w-sm shadow-2xl shadow-green-100 overflow-hidden p-6"
+        >
+          <div class="text-center">
+            <div
+              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-rose-50 border border-rose-200 text-rose-500 mb-4"
+            >
+              <svg
+                class="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-green-900 mb-2">
+              Delete Student Record
+            </h3>
+            <p class="text-xs text-gray-500 mb-6 leading-relaxed">
+              Are you sure you want to permanently delete this student record?
+              This action cannot be undone.
+            </p>
+            <div class="flex items-center justify-center gap-3">
+              <button
+                id="cancel-delete-btn"
+                onclick="closeDeleteModal()"
+                class="btn-transition flex-1 px-4 py-2.5 text-xs font-semibold text-gray-500 hover:text-green-800 bg-gray-100 hover:bg-green-100 border border-gray-200 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                id="confirm-delete-btn"
+                onclick="executeDeleteStudent()"
+                class="btn-transition flex-1 px-4 py-2.5 text-xs font-semibold text-white bg-rose-500 hover:bg-rose-600 rounded-lg border border-rose-400 shadow-md"
+              >
+                Delete Permanent
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- end #app-layout -->
 
-
-
-  </div><!-- end #app-layout -->
-
-  <!-- ==========================================
+    <!-- ==========================================
        JAVASCRIPT MODULES — Load Order Matters
        ========================================== -->
-  <script src="js/state.js"></script>
-  <script src="js/logger.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/router.js"></script>
-  <script src="js/students.js"></script>
-  <script src="js/dashboard.js"></script>
-  <script src="js/batches.js"></script>
-  <script src="js/settings.js"></script>
-  <script src="js/tracker.js"></script>
-  <script src="js/export.js"></script>
-  <script src="js/import.js"></script>
-  <script src="js/sql-studio.js"></script>
-  <script src="js/main.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.1/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/alasql@4.1.0/dist/alasql.min.js"></script>
-
-</body>
+    <script src="js/state.js"></script>
+    <script src="js/logger.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/students.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/batches.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/tracker.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/import.js"></script>
+    <script src="js/sql-studio.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.1/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alasql@4.1.0/dist/alasql.min.js"></script>
+  </body>
 </html>

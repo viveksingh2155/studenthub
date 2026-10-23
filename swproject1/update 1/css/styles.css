@@ -1,11 +1,11 @@
 /* ============================================
-   Student Hub — Custom Stylesheet (White & Green Theme)
+  Student Hub — Custom Stylesheet (Warm Neutral Theme)
    css/styles.css
    ============================================ */
 
 :root {
-  --color-primary: 22, 163, 74;   /* green-600 */
-  --color-primary-hover: 15, 118, 55; /* green-700 */
+  --color-primary: 81, 45, 29;
+  --color-primary-hover: 68, 39, 25;
 }
 
 .theme-emerald {
@@ -34,8 +34,8 @@
 }
 
 body {
-  background-color: #f0fdf4; /* green-50 */
-  color: #14532d; /* green-900 */
+  background-color: #e6e6e6;
+  color: #171411;
   overflow: hidden;
 }
 
@@ -65,14 +65,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #dcfce7; /* green-100 */
+  background: #e6e3de;
 }
 ::-webkit-scrollbar-thumb {
-  background: #86efac; /* green-300 */
+  background: #c2a17e;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #4ade80; /* green-400 */
+  background: #512d1d;
 }
 
 /* Highlight pulse for Architecture Tracker */

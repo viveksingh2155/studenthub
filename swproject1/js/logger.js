@@ -8,11 +8,11 @@
  * @param {string} msg - The message to log.
  */
 function logAction(msg) {
-  const consoleEl = document.getElementById('log-console');
+  const consoleEl = document.getElementById("log-console");
   if (!consoleEl) return;
   const now = new Date();
-  const timeStr = now.toTimeString().split(' ')[0];
-  const logLine = document.createElement('div');
+  const timeStr = now.toTimeString().split(" ")[0];
+  const logLine = document.createElement("div");
   logLine.textContent = `[${timeStr}] ${msg}`;
   consoleEl.appendChild(logLine);
   consoleEl.scrollTop = consoleEl.scrollHeight;

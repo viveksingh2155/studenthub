@@ -11,7 +11,7 @@
  *   students.js → dashboard.js → batches.js →
  *   settings.js → tracker.js → export.js → main.js
  */
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
   // 1. Check for an existing session and show/hide auth vs. app layout
   applySessionState();
 
@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
   loadState();
 
   // 3. Render the default dashboard view
-  switchView('dashboard');
+  switchView("dashboard");
 
   if (window.initializeImportPanel) {
     window.initializeImportPanel();

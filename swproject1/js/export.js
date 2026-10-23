@@ -21,34 +21,39 @@ function exportToExcel() {
     "Email Address",
     "Course Title",
     "Age",
-    "Status"
+    "Status",
   ];
 
   // Map student records to CSV rows with proper escaping
-  const csvRows = state.students.map(s => [
+  const csvRows = state.students.map((s) => [
     s.id,
     `"${s.name.replace(/"/g, '""')}"`,
     s.rollNumber,
     s.email,
     `"${s.course.replace(/"/g, '""')}"`,
     s.age,
-    s.status
+    s.status,
   ]);
 
   const csvContent = [
     headers.join(","),
-    ...csvRows.map(row => row.join(","))
+    ...csvRows.map((row) => row.join(",")),
   ].join("\n");
 
   // Build and trigger blob download
-  const blob   = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url    = URL.createObjectURL(blob);
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.setAttribute("href", url);
-  anchor.setAttribute("download", `student_roster_${new Date().toISOString().slice(0, 10)}.csv`);
+  anchor.setAttribute(
+    "download",
+    `student_roster_${new Date().toISOString().slice(0, 10)}.csv`,
+  );
   document.body.appendChild(anchor);
   anchor.click();
   document.body.removeChild(anchor);
 
-  logAction("Exported entire student database roster as an Excel (CSV) spreadsheet.");
+  logAction(
+    "Exported entire student database roster as an Excel (CSV) spreadsheet.",
+  );
 }

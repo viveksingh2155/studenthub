@@ -1,53 +1,91 @@
 /* ============================================
-   Student Hub — Tailwind Config (White & Green Theme)
+  Student Hub — Tailwind Config (Warm Neutral Theme)
    js/config.js  (must load BEFORE tailwind CDN)
    ============================================ */
 
 var tailwind = window.tailwind || {};
 tailwind.config = {
-  darkMode: 'class',
+  darkMode: "class",
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['Fira Code', 'monospace'],
+        sans: ["Inter", "sans-serif"],
+        mono: ["Fira Code", "monospace"],
       },
       colors: {
         brand: {
-          50:  '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          900: '#14532d',
+          50: "#f1efec",
+          100: "#e6e3de",
+          200: "#d5c0a0",
+          300: "#c2a17e",
+          400: "#97724f",
+          500: "#734c30",
+          600: "#512d1d",
+          700: "#442719",
+          800: "#2f2017",
+          900: "#171411",
         },
-        /* Remapping "slate" to green-tinted neutrals for light mode */
+        white: "#efeeeb",
+        green: {
+          50: "#f1efec",
+          100: "#e6e3de",
+          200: "#d5c0a0",
+          300: "#c2a17e",
+          400: "#97724f",
+          500: "#734c30",
+          600: "#512d1d",
+          700: "#442719",
+          800: "#2f2017",
+          900: "#171411",
+        },
+        emerald: {
+          50: "#f1efec",
+          100: "#e6e3de",
+          200: "#d5c0a0",
+          300: "#c2a17e",
+          400: "#97724f",
+          500: "#734c30",
+          600: "#512d1d",
+          700: "#442719",
+          800: "#2f2017",
+          900: "#171411",
+        },
+        gray: {
+          50: "#f5f4f2",
+          100: "#e8e6e3",
+          200: "#d6d3ce",
+          300: "#bbb7b0",
+          400: "#98938c",
+          500: "#77716a",
+          600: "#5f5952",
+          700: "#403a34",
+          800: "#292521",
+          900: "#171411",
+        },
         slate: {
-          950: '#f0fdf4',  /* green-50 — body bg */
-          900: '#ffffff',  /* pure white — card bg */
-          850: '#f9fafb',  /* gray-50 — subtle off-white */
-          800: '#e8f5e9',  /* very light green — borders */
-          700: '#bbf7d0',  /* green-200 — muted borders */
-          600: '#6b7280',  /* gray-500 — secondary text */
-          500: '#9ca3af',  /* gray-400 — placeholder text */
-          400: '#374151',  /* gray-700 — body text */
-          300: '#111827',  /* gray-900 — headings */
-          200: '#1f2937',  /* gray-800 — strong text */
-          100: '#d1fae5',  /* emerald-100 */
-        }
+          50: "#f5f4f2",
+          100: "#e8e6e3",
+          200: "#d6d3ce",
+          300: "#bbb7b0",
+          400: "#98938c",
+          500: "#887b6c",
+          600: "#6c5c4c",
+          700: "#543f31",
+          800: "#3d2b21",
+          850: "#2f2119",
+          900: "#211812",
+          950: "#14110f",
+        },
       },
       boxShadow: {
-        'glow-green':   '0 0 20px -2px rgba(22, 163, 74, 0.35)',
-        'glow-blue':    '0 0 20px -2px rgba(59, 130, 246, 0.35)',
-        'glow-emerald': '0 0 20px -2px rgba(16, 185, 129, 0.35)',
-        'glow-rose':    '0 0 20px -2px rgba(244, 63, 94, 0.35)',
-        'glow-purple':  '0 0 20px -2px rgba(168, 85, 247, 0.35)',
-        'glow-amber':   '0 0 20px -2px rgba(245, 158, 11, 0.35)',
-      }
-    }
-  }
+        "glow-green": "0 0 20px -2px rgba(22, 163, 74, 0.35)",
+        "glow-blue": "0 0 20px -2px rgba(59, 130, 246, 0.35)",
+        "glow-emerald": "0 0 20px -2px rgba(16, 185, 129, 0.35)",
+        "glow-rose": "0 0 20px -2px rgba(244, 63, 94, 0.35)",
+        "glow-purple": "0 0 20px -2px rgba(168, 85, 247, 0.35)",
+        "glow-amber": "0 0 20px -2px rgba(245, 158, 11, 0.35)",
+      },
+    },
+  },
 };
 window.tailwind = tailwind;
